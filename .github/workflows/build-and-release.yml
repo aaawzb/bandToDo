@@ -1,4 +1,4 @@
-name: Build & Pre-release
+name: 构建与预发布
 
 on:
   push:
@@ -12,45 +12,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: 安装 Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          registry-url: https://registry.npmmirror.com
 
-      - name: Install dependencies
+      - name: 设置国内镜像源
+        run: npm config set registry https://registry.npmmirror.com
+
+      - name: 安装依赖
         run: npm install
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Build RPK
+      - name: 编译 RPK
         run: npm run build
 
-      - name: Find RPK file
+      - name: 查找 RPK 文件
         id: find-rpk
         run: |
           RPK=$(find . -name "*.rpk" -type f 2>/dev/null | head -1)
           if [ -z "$RPK" ]; then
-            echo "No .rpk found in build output"
+            echo "未在构建输出中找到 .rpk 文件"
+            find . -name "*.rpk" -type f 2>/dev/null || true
             find build dist release -type f 2>/dev/null || true
             exit 1
           fi
           echo "path=$RPK" >> $GITHUB_OUTPUT
           echo "name=$(basename "$RPK")" >> $GITHUB_OUTPUT
 
-      - name: Create Pre-release
+      - name: 创建预发布版本
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
-          name: v${{ github.run_number }} (pre-release)
+          name: v${{ github.run_number }}（预发布）
           body: |
             ## 自动构建 #${{ github.run_number }}
 
-            - 提交: ${{ github.sha }}
-            - 构建时间: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - 提交：${{ github.sha }}
+            - 构建时间：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            > 此为自动生成的 pre-release 版本，用于测试。
+            > 此为自动生成的预发布版本，用于测试。
           files: ${{ steps.find-rpk.outputs.path }}
           prerelease: true
           make_latest: false

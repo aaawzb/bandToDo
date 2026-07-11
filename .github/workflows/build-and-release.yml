@@ -17,9 +17,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: 设置国内镜像源
-        run: npm config set registry https://registry.npmmirror.com
-
       - name: 安装依赖
         run: npm install
         env:

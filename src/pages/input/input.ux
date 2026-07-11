@@ -45,7 +45,7 @@
 </template>
 
 <style>
-  @import '/common/app.css';
+  @import '../../common/app.css';
 
   .page {
     flex-direction: column;

@@ -1,0 +1,243 @@
+<template>
+  <div class="page">
+    <div class="header">
+      <image class="back-btn" src="/common/back_rect.png" onclick="goBack"></image>
+      <text class="header-title">选择日期</text>
+    </div>
+
+    <div class="date-panel">
+      <div class="month-nav">
+        <text class="nav-btn" onclick="prevMonth">‹</text>
+        <text class="month-label">{{year}}年{{month}}月</text>
+        <text class="nav-btn" onclick="nextMonth">›</text>
+      </div>
+
+      <div class="weekday-row">
+        <text class="weekday" for="{{weekdays}}">{{$item}}</text>
+      </div>
+
+      <div class="days-grid">
+        <div class="day-cell" for="{{days}}" onclick="selectDay('{{$item.day}}')">
+          <text class="day-text" style="color: {{getDayColor($item)}};">{{$item.day}}</text>
+          <div class="day-bg" if="{{$item.selected}}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="today-bar">
+      <text class="today-btn" onclick="selectToday">回到今天</text>
+    </div>
+  </div>
+</template>
+
+<style>
+  @import '/common/app.css';
+
+  .page {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 12px;
+    background-color: #000000;
+  }
+
+  .back-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .header-title {
+    flex: 1;
+    text-align: center;
+    font-size: 22px;
+    color: #ffffff;
+  }
+
+  .date-panel {
+    position: absolute;
+    top: 60px;
+    left: 16px;
+    right: 16px;
+    bottom: 60px;
+    background-color: #1a1a1a;
+    border-radius: 16px;
+    padding: 16px;
+    flex-direction: column;
+  }
+
+  .month-nav {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .nav-btn {
+    font-size: 28px;
+    color: #ff6a24;
+    padding: 8px 16px;
+  }
+
+  .month-label {
+    font-size: 22px;
+    color: #ffffff;
+    font-weight: bold;
+  }
+
+  .weekday-row {
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 8px;
+  }
+
+  .weekday {
+    font-size: 16px;
+    color: #6f6f6f;
+    width: 38px;
+    text-align: center;
+  }
+
+  .days-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .day-cell {
+    width: 38px;
+    height: 36px;
+    justify-content: center;
+    align-items: center;
+    margin: 2px;
+  }
+
+  .day-text {
+    font-size: 18px;
+  }
+
+  .day-bg {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    background-color: #ff6a24;
+    opacity: 0.3;
+  }
+
+  .today-bar {
+    position: absolute;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    align-items: center;
+  }
+
+  .today-btn {
+    font-size: 18px;
+    color: #ff6a24;
+    padding: 8px 24px;
+    background-color: #1a1a1a;
+    border-radius: 16px;
+  }
+</style>
+
+<script>
+  import router from '@system.router'
+
+  export default {
+    data() {
+      return {
+        year: 2026,
+        month: 7,
+        selectedDay: 0,
+        weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+        days: []
+      }
+    },
+    onInit() {
+      let now = new Date()
+      this.year = now.getFullYear()
+      this.month = now.getMonth() + 1
+      this.selectedDay = now.getDate()
+      this.buildDays()
+    },
+    buildDays() {
+      let firstDay = new Date(this.year, this.month - 1, 1).getDay()
+      let daysInMonth = new Date(this.year, this.month, 0).getDate()
+      let days = []
+
+      for (let i = 0; i < firstDay; i++) {
+        days.push({ day: '', selected: false, disabled: true })
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        days.push({
+          day: d,
+          selected: d === this.selectedDay,
+          disabled: false,
+          isToday: this.isToday(d)
+        })
+      }
+
+      this.days = days
+    },
+    isToday(day) {
+      let now = new Date()
+      return now.getFullYear() === this.year &&
+             now.getMonth() + 1 === this.month &&
+             now.getDate() === day
+    },
+    getDayColor(item) {
+      if (item.disabled) return '#3a3a3a'
+      if (item.selected) return '#ff6a24'
+      if (item.isToday) return '#ffffff'
+      return '#aaaaaa'
+    },
+    prevMonth() {
+      this.month--
+      if (this.month < 1) { this.month = 12; this.year-- }
+      this.selectedDay = 0
+      this.buildDays()
+    },
+    nextMonth() {
+      this.month++
+      if (this.month > 12) { this.month = 1; this.year++ }
+      this.selectedDay = 0
+      this.buildDays()
+    },
+    selectDay(day) {
+      if (!day) return
+      this.selectedDay = day
+      this.buildDays()
+
+      let dateStr = this.year + '-' +
+        String(this.month).padStart(2, '0') + '-' +
+        String(day).padStart(2, '0')
+
+      if (!this.$app.$data) this.$app.$data = {}
+      this.$app.$data.returnedDate = dateStr
+      router.back()
+    },
+    selectToday() {
+      let now = new Date()
+      this.year = now.getFullYear()
+      this.month = now.getMonth() + 1
+      this.selectedDay = now.getDate()
+      this.buildDays()
+    },
+    goBack() {
+      router.back()
+    }
+  }
+</script>

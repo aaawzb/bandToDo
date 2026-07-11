@@ -1,0 +1,486 @@
+<template>
+  <div style="flex-direction:column;">
+    <stack onappear="onAppear">
+      <canvas id="keyboardCanvas" style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;"></canvas>
+    </stack>
+  </div>
+</template>
+
+<style>
+</style>
+
+<script>
+import { SimpleInputMethod } from './assets/dicUtil.js'
+
+let registered = false
+
+export default {
+  props: [
+    'canvasWidth',
+    'canvasHeight',
+    'lang',
+    'keyboardType',
+    'textColor'
+  ],
+  data() {
+    return {
+      k_board: null,
+      key_width_size: 0,
+      key_height_size: 0,
+      lastKey: 0,
+      shiftflag: false,
+      uppercase: false,
+      numberflag: false,
+      langNow: 'cn',
+      keyboardTypeNow: 'horizontal',
+      textColorNow: '#ffffff',
+      isPress: false,
+      longPressTimer: null,
+      longPressKey: null,
+      _inputValue: '',
+      _inputCode: '',
+      _inputHanziList: [],
+      _inputHanziIndex: 0,
+      _inputAll: [],
+      _cursorIndex: 0
+    }
+  },
+  onInit() {
+    this.langNow = this.lang || 'cn'
+    this.keyboardTypeNow = this.keyboardType || 'horizontal'
+    this.textColorNow = this.textColor || '#ffffff'
+  },
+  onAppear() {
+    if (registered) return
+    registered = true
+    let that = this
+    SimpleInputMethod.initDict()
+    let canvas = this.$element('keyboardCanvas')
+    let ctx = canvas.getContext('2d')
+
+    let kb = createKeyboard(this)
+    this.k_board = kb
+    this.key_width_size = Math.floor(this.canvasWidth / kb.x_key)
+    this.key_height_size = Math.floor((this.canvasHeight - 8) / kb.y_key)
+
+    kb.ctx = ctx
+    kb.render()
+
+    canvas.on('click', function (ev) {
+      let key = kb.getKey(ev)
+      if (!key) return
+      that.onKeyPress(key)
+    })
+
+    canvas.on('longpress', function (ev) {
+      let key = kb.getKey(ev)
+      if (!key) return
+      that.onKeyLongPress(key)
+    })
+
+    canvas.on('swipe', function (ev) {
+      that.onDeleteSwipe()
+    })
+  },
+  onKeyPress(key) {
+    if (key === 'del') {
+      this.deleteOne()
+      return
+    }
+    if (key === 'shift') {
+      this.shiftflag = !this.shiftflag
+      this.uppercase = !this.uppercase
+      this.k_board.setShift(this.shiftflag)
+      return
+    }
+    if (key === '123') {
+      this.numberflag = !this.numberflag
+      this.k_board.setNumber(this.numberflag)
+      return
+    }
+    if (key === 'lang') {
+      this.langNow = this.langNow === 'cn' ? 'en' : 'cn'
+      this.k_board.setLang(this.langNow)
+      return
+    }
+    if (key === 'space') {
+      this.pushInput(' ')
+      return
+    }
+    if (key === 'back2') {
+      this.$emit('back')
+      return
+    }
+    if (key === 'search') {
+      this.$emit('search')
+      return
+    }
+    if (key === 'enter') {
+      this.$emit('enter')
+      return
+    }
+    if (key === 'tab') {
+      this.$emit('tab')
+      return
+    }
+    if (key === 'up') {
+      this.$emit('up')
+      return
+    }
+    if (key === 'down') {
+      this.$emit('down')
+      return
+    }
+    if (key === 'done') {
+      this.$emit('done', this._inputAll.join(''))
+      return
+    }
+
+    if (this.langNow === 'cn') {
+      if (key === 'del_all') {
+        this._inputValue = ''
+        this._inputCode = ''
+        this._inputHanziList = []
+        this._inputAll = []
+        this._cursorIndex = 0
+        this.updateDisplay()
+        return
+      }
+      this.inputChinese(key)
+    }
+    else if (this.langNow === 'en') {
+      this.inputEnglish(key)
+    }
+    else if (this.langNow === 'jp') {
+      this.inputJapanese(key)
+    }
+  },
+  onKeyLongPress(key) {
+    if (key === 'del') {
+      this._inputValue = ''
+      this._inputCode = ''
+      this._inputHanziList = []
+      this._inputAll = []
+      this._cursorIndex = 0
+      this.updateDisplay()
+    }
+  },
+  onDeleteSwipe() {
+    this._inputValue = ''
+    this._inputCode = ''
+    this._inputHanziList = []
+    this._inputAll = []
+    this._cursorIndex = 0
+    this.updateDisplay()
+  },
+  inputChinese(key) {
+    if (key === 'del') return
+    this._inputCode += key
+    let result = SimpleInputMethod.getHanzi(this._inputCode, 'cn')
+    this._inputHanziList = result[0] || []
+    this._inputHanziIndex = 0
+    this._inputValue = this._inputHanziList[0] || this._inputCode
+    this.updateDisplay()
+  },
+  inputEnglish(key) {
+    if (this.shiftflag) {
+      key = key.toUpperCase()
+      this.shiftflag = false
+      this.k_board.setShift(false)
+    }
+    this.pushInput(key)
+  },
+  inputJapanese(key) {
+    this._inputCode += key
+    let result = SimpleInputMethod.getHanzi(this._inputCode, 'jp')
+    this._inputHanziList = result[0] || []
+    this._inputHanziIndex = 0
+    this._inputValue = this._inputHanziList[0] || this._inputCode
+    this.updateDisplay()
+  },
+  pushInput(str) {
+    this._inputAll.splice(this._cursorIndex, 0, str)
+    this._cursorIndex++
+    this._inputValue = ''
+    this._inputCode = ''
+    this._inputHanziList = []
+    this._inputHanziIndex = 0
+    this.updateDisplay()
+  },
+  deleteOne() {
+    if (this._inputCode.length > 0) {
+      this._inputCode = this._inputCode.slice(0, -1)
+      if (this._inputCode.length > 0) {
+        let result = SimpleInputMethod.getHanzi(this._inputCode, this.langNow === 'en' ? 'cn' : this.langNow)
+        this._inputHanziList = result[0] || []
+        this._inputHanziIndex = 0
+        this._inputValue = this._inputHanziList[0] || this._inputCode
+      }
+      else {
+        this._inputValue = ''
+        this._inputHanziList = []
+        this._inputHanziIndex = 0
+      }
+      this.updateDisplay()
+    }
+    else if (this._inputAll.length > 0 && this._cursorIndex > 0) {
+      this._cursorIndex--
+      this._inputAll.splice(this._cursorIndex, 1)
+      this.updateDisplay()
+    }
+  },
+  chooseHanzi(index) {
+    if (index < this._inputHanziList.length) {
+      this.pushInput(this._inputHanziList[index])
+    }
+    else {
+      this.pushInput(this._inputCode)
+    }
+  },
+  moveCursorLeft() {
+    if (this._cursorIndex > 0) {
+      this._cursorIndex--
+      this.updateDisplay()
+    }
+  },
+  moveCursorRight() {
+    if (this._cursorIndex < this._inputAll.length) {
+      this._cursorIndex++
+      this.updateDisplay()
+    }
+  },
+  updateDisplay() {
+    let text = this._inputAll.join('')
+    let composing = this._inputValue || ''
+    this.$emit('input', {
+      text: text,
+      composing: composing,
+      cursorIndex: this._cursorIndex,
+      hanziList: this._inputHanziList,
+      hanziIndex: this._inputHanziIndex
+    })
+  },
+  clear() {
+    this._inputValue = ''
+    this._inputCode = ''
+    this._inputHanziList = []
+    this._inputAll = []
+    this._cursorIndex = 0
+    this.updateDisplay()
+  },
+  getText() {
+    return this._inputAll.join('')
+  },
+  setText(text) {
+    this._inputAll = text ? text.split('') : []
+    this._cursorIndex = this._inputAll.length
+    this._inputValue = ''
+    this._inputCode = ''
+    this._inputHanziList = []
+    this.updateDisplay()
+  }
+}
+
+function createKeyboard(component) {
+  let that = component
+  let imageBase = 'InputMethod/assets/'
+  let imageType = 'horizontal'
+
+  let langAssets = {
+    'cn': { text: '中/英', asset: 'cn.png' },
+    'en': { text: '中/英', asset: 'en.png' },
+    'jp': { text: 'あ/a', asset: 'jp.png' }
+  }
+
+  function Keyboard() {
+    this.ctx = null
+    this.x_key = 10
+    this.y_key = 4
+    this.button = []
+    this.shift = false
+    this.isNumber = false
+    this.lang = 'cn'
+  }
+
+  Keyboard.prototype.setShift = function (v) {
+    this.shift = v
+    this.render()
+  }
+
+  Keyboard.prototype.setNumber = function (v) {
+    this.isNumber = v
+    this.render()
+  }
+
+  Keyboard.prototype.setLang = function (v) {
+    this.lang = v
+    this.render()
+  }
+
+  Keyboard.prototype.getKey = function (ev) {
+    let x = that.key_width_size
+    let y = that.key_height_size
+    for (let i = 0; i < this.button.length; i++) {
+      let b = this.button[i]
+      if (ev.x >= b.x && ev.x <= b.x + b.w &&
+          ev.y >= b.y && ev.y <= b.y + b.h) {
+        return b
+      }
+    }
+    return null
+  }
+
+  Keyboard.prototype.render = function () {
+    let ctx = this.ctx
+    let w = that.canvasWidth
+    let h = that.canvasHeight
+    let x = that.key_width_size
+    let y = that.key_height_size
+
+    ctx.clearRect(0, 0, w, h)
+
+    let keys = this.getKeys()
+    this.button = []
+
+    for (let i = 0; i < keys.length; i++) {
+      let row = keys[i]
+      let rowY = i * y + 4
+      let totalWidth = row.reduce((s, k) => s + (k.w || 1), 0)
+      let offsetX = (w - totalWidth * x) / 2
+
+      let col = 0
+      for (let j = 0; j < row.length; j++) {
+        let key = row[j]
+        let kw = (key.w || 1) * x
+        let kh = y - 4
+        let kx = offsetX + col * x
+        let ky = rowY
+
+        this.button.push({
+          key: key.k,
+          x: kx,
+          y: ky,
+          w: kw,
+          h: kh
+        })
+
+        this.drawKey(ctx, kx, ky, kw, kh, key)
+        col += key.w || 1
+      }
+    }
+  }
+
+  Keyboard.prototype.drawKey = function (ctx, x, y, w, h, key) {
+    let radius = 6
+    ctx.beginPath()
+    ctx.moveTo(x + radius, y)
+    ctx.lineTo(x + w - radius, y)
+    ctx.arcTo(x + w, y, x + w, y + radius, radius)
+    ctx.lineTo(x + w, y + h - radius)
+    ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius)
+    ctx.lineTo(x + radius, y + h)
+    ctx.arcTo(x, y + h, x, y + h - radius, radius)
+    ctx.lineTo(x, y + radius)
+    ctx.arcTo(x, y, x + radius, y, radius)
+    ctx.closePath()
+
+    let fillColor = key.c || '#4a4a4a'
+    ctx.fillStyle = fillColor
+    ctx.fill()
+
+    if (key.i) {
+      let img = ctx.createImageData(1, 1)
+      try {
+        let imgObj = that.$asset(`${imageBase}${imageType}/${key.i}`)
+        if (imgObj) {
+          ctx.drawImage(imgObj, x + (w - 24) / 2, y + (h - 24) / 2, 24, 24)
+        }
+      }
+      catch (e) {
+        if (key.t) {
+          ctx.fillStyle = that.textColorNow
+          ctx.font = '16px sans-serif'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(key.t, x + w / 2, y + h / 2)
+        }
+      }
+    }
+    else if (key.t) {
+      ctx.fillStyle = that.textColorNow
+      ctx.font = '18px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(key.t, x + w / 2, y + h / 2)
+    }
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = '12px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+  }
+
+  Keyboard.prototype.getKeys = function () {
+    let lang = this.lang
+    let isNum = this.isNumber
+    let shift = this.shift
+
+    let cnLetters = 'q w e r t y u i o p'.split(' ')
+    let cnLetters2 = 'a s d f g h j k l'.split(' ')
+    let cnLetters3 = 'z x c v b n m'.split(' ')
+    let enLetters = shift
+      ? 'Q W E R T Y U I O P'.split(' ')
+      : 'q w e r t y u i o p'.split(' ')
+    let enLetters2 = shift
+      ? 'A S D F G H J K L'.split(' ')
+      : 'a s d f g h j k l'.split(' ')
+    let enLetters3 = shift
+      ? 'Z X C V B N M'.split(' ')
+      : 'z x c v b n m'.split(' ')
+
+    let letters = lang === 'cn' ? cnLetters : enLetters
+    let letters2 = lang === 'cn' ? cnLetters2 : enLetters2
+    let letters3 = lang === 'cn' ? cnLetters3 : enLetters3
+
+    let langAsset = langAssets[lang] || langAssets['cn']
+
+    let numberRow1 = '1 2 3 4 5 6 7 8 9 0'.split(' ')
+    let numberRow2 = '- / : ; ( ) ¥ & @ "'.split(' ')
+    let numberRow3 = '.,?!\'\u0060~'.split(' ')
+
+    if (isNum) {
+      return [
+        numberRow1.map(k => ({ k, t: k })),
+        numberRow2.map(k => ({ k, t: k })),
+        [
+          { k: 'lang', t: langAsset.text, w: 1.5 },
+          ...numberRow3.map(k => ({ k, t: k })),
+          { k: 'del', i: 'del.png', w: 1.5 }
+        ],
+        [
+          { k: '123', t: 'ABC', w: 2 },
+          { k: 'space', i: 'space.png', w: 4 },
+          { k: 'back2', t: '\u23CE', w: 2 }
+        ]
+      ]
+    }
+
+    return [
+      letters.map(k => ({ k, t: k })),
+      letters2.map(k => ({ k, t: k })),
+      [
+        { k: 'lang', t: langAsset.text, w: 1.5 },
+        ...letters3.map(k => ({ k, t: k })),
+        { k: 'del', i: 'del.png', w: 1.5 }
+      ],
+      [
+        { k: '123', t: '123', w: 2 },
+        { k: 'space', i: 'space.png', w: 4 },
+        { k: 'back2', t: '\u23CE', w: 2 }
+      ]
+    ]
+  }
+
+  return new Keyboard()
+}
+</script>

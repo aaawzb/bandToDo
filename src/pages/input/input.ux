@@ -1,0 +1,360 @@
+<template>
+  <div class="page">
+    <div class="header">
+      <image class="back-btn" src="/common/back_rect.png" onclick="goBack"></image>
+      <div class="header-title-area">
+        <text class="header-label">新建待办</text>
+        <text class="char-count">{{charCount}}</text>
+      </div>
+      <text class="save-btn" onclick="saveTodo">保存</text>
+    </div>
+
+    <div class="text-display-area">
+      <text class="display-text">{{displayText}}</text>
+      <text class="cursor" if="{{showCursor}}">|</text>
+      <div class="hanzi-bar" if="{{hanziList.length > 0}}">
+        <text class="hanzi-option" for="{{hanziList}}" onclick="chooseHanzi('{{$idx}}')">{{$item}}</text>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <div class="action-btn" onclick="showPriorityPicker">
+        <text class="priority-preview" style="color: {{getPriorityColor(selectedPriority)}};">{{priorityLabel}}</text>
+      </div>
+      <div class="action-btn" onclick="showDatePicker">
+        <text class="action-text">{{dateLabel}}</text>
+      </div>
+    </div>
+
+    <div class="priority-picker" if="{{showPriority}}">
+      <div class="picker-overlay" onclick="hidePriorityPicker"></div>
+      <div class="picker-panel">
+        <text class="picker-title">设置优先级</text>
+        <div class="picker-options">
+          <div class="picker-option" for="{{priorities}}" onclick="selectPriority('{{$item.value}}')">
+            <div class="prio-dot" style="background-color: {{$item.color}};"></div>
+            <text class="prio-label">{{$item.label}}</text>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <import-component name="input-method" from="../../components/InputMethod/InputMethod.ux"></import-component>
+    <input-method id="kb" canvas-width="{{kbdWidth}}" canvas-height="{{kbdHeight}}" lang="cn" keyboard-type="horizontal" text-color="#ffffff" oninput="onInput" ondone="onKeyboardDone" onback="goBack"></input-method>
+  </div>
+</template>
+
+<style>
+  @import '/common/app.css';
+
+  .page {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 12px;
+    background-color: #000000;
+  }
+
+  .back-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .header-title-area {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-label {
+    font-size: 22px;
+    color: #ffffff;
+  }
+
+  .char-count {
+    font-size: 18px;
+    color: #6f6f6f;
+    margin-left: 8px;
+  }
+
+  .save-btn {
+    font-size: 20px;
+    color: #ff6a24;
+  }
+
+  .text-display-area {
+    position: absolute;
+    top: 56px;
+    left: 16px;
+    right: 16px;
+    height: 60px;
+    flex-direction: row;
+    align-items: center;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    padding: 0 12px;
+  }
+
+  .display-text {
+    font-size: 24px;
+    color: #ffffff;
+    max-lines: 1;
+  }
+
+  .cursor {
+    font-size: 24px;
+    color: #ff6a24;
+    margin-left: 2px;
+  }
+
+  .hanzi-bar {
+    position: absolute;
+    top: 62px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a1a;
+  }
+
+  .hanzi-option {
+    font-size: 22px;
+    color: #ffffff;
+    margin: 0 10px;
+    padding: 4px 8px;
+    background-color: #2a2a2a;
+    border-radius: 6px;
+  }
+
+  .action-bar {
+    position: absolute;
+    top: 106px;
+    left: 16px;
+    right: 16px;
+    height: 44px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .action-btn {
+    padding: 6px 14px;
+    background-color: #1a1a1a;
+    border-radius: 16px;
+  }
+
+  .priority-preview {
+    font-size: 18px;
+  }
+
+  .action-text {
+    font-size: 18px;
+    color: #6f6f6f;
+  }
+
+  .priority-picker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .picker-overlay {
+    flex: 1;
+  }
+
+  .picker-panel {
+    background-color: #2a2a2a;
+    border-radius: 16px 16px 0 0;
+    padding: 20px;
+  }
+
+  .picker-title {
+    font-size: 22px;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .picker-options {
+    flex-direction: column;
+  }
+
+  .picker-option {
+    flex-direction: row;
+    align-items: center;
+    padding: 12px 0;
+  }
+
+  .prio-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    margin-right: 12px;
+  }
+
+  .prio-label {
+    font-size: 20px;
+    color: #ffffff;
+  }
+
+  #kb {
+    position: absolute;
+    bottom: 0;
+  }
+</style>
+
+<script>
+  import router from '@system.router'
+  import file from '@system.file'
+  import vibrator from '@system.vibrator'
+
+  const DATA_PATH = '/data/todos.json'
+
+  export default {
+    data() {
+      return {
+        text: '',
+        composing: '',
+        cursorIndex: 0,
+        hanziList: [],
+        selectedPriority: '无',
+        selectedDate: '',
+        showPriority: false,
+        showCursor: true,
+        priorities: [
+          { label: '无', value: '无', color: '#6f6f6f' },
+          { label: '低', value: '低', color: '#4cd964' },
+          { label: '中', value: '中', color: '#ffc043' },
+          { label: '高', value: '高', color: '#ff6a24' }
+        ],
+        kbdWidth: 336,
+        kbdHeight: 180
+      }
+    },
+    computed: {
+      displayText() {
+        return this.text + this.composing
+      },
+      charCount() {
+        return this.text.length
+      },
+      priorityLabel() {
+        return '!' + this.selectedPriority
+      },
+      dateLabel() {
+        if (this.selectedDate) {
+          let parts = this.selectedDate.split('-')
+          return (parts[1] || '') + '/' + (parts[2] || '')
+        }
+        return '日期'
+      }
+    },
+    onInit() {
+      let w = this.$def('screenWidth') || 336
+      let h = this.$def('screenHeight') || 480
+      this.kbdWidth = w
+      this.kbdHeight = Math.floor(h * 0.38)
+    },
+    onShow() {
+      if (this.$app.$data && this.$app.$data.returnedDate) {
+        this.selectedDate = this.$app.$data.returnedDate
+        this.$app.$data.returnedDate = ''
+      }
+    },
+    getPriorityColor(p) {
+      let colors = { '高': '#ff6a24', '中': '#ffc043', '低': '#4cd964', '无': '#6f6f6f' }
+      return colors[p] || '#6f6f6f'
+    },
+    onInput(ev) {
+      this.text = ev.text
+      this.composing = ev.composing
+      this.cursorIndex = ev.cursorIndex
+      this.hanziList = ev.hanziList || []
+    },
+    onKeyboardDone(ev) {
+      let fullText = ev || this.text
+      this.text = fullText
+      this.composing = ''
+      this.hanziList = []
+    },
+    chooseHanzi(idx) {
+      let kb = this.$element('kb')
+      if (kb && kb.chooseHanzi) {
+        kb.chooseHanzi(parseInt(idx))
+      }
+    },
+    showPriorityPicker() {
+      this.showPriority = true
+    },
+    hidePriorityPicker() {
+      this.showPriority = false
+    },
+    selectPriority(val) {
+      this.selectedPriority = val
+      this.showPriority = false
+      vibrator.vibrate({ mode: 1, time: 20 })
+    },
+    showDatePicker() {
+      router.push({ uri: '/pages/datepicker' })
+    },
+    goBack() {
+      router.back()
+    },
+    saveTodo() {
+      let title = (this.text + this.composing).trim()
+      if (!title) return
+
+      let todo = {
+        title: title,
+        done: false,
+        priority: this.selectedPriority,
+        dueDate: this.selectedDate || '',
+        createdAt: new Date().toISOString()
+      }
+
+      let that = this
+      file.readText({
+        uri: 'internal://app' + DATA_PATH,
+        success(ret) {
+          let todos = []
+          try { todos = JSON.parse(ret.text) } catch (e) {}
+          todos.push(todo)
+          that.writeTodos(todos)
+        },
+        fail() {
+          that.writeTodos([todo])
+        }
+      })
+    },
+    writeTodos(todos) {
+      file.writeText({
+        uri: 'internal://app' + DATA_PATH,
+        text: JSON.stringify(todos),
+        success() {
+          router.back()
+        },
+        fail() {
+          router.back()
+        }
+      })
+    }
+  }
+</script>

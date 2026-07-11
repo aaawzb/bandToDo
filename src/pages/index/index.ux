@@ -1,0 +1,208 @@
+<template>
+  <div class="page">
+    <text class="page-title">待办清单</text>
+
+    <list class="todo-list">
+      <list-item class="todo-card" for="{{todos}}" type="todo" key="{{$idx}}">
+        <div class="card-inner" onswipe="onSwipe('{{$idx}}', $event)">
+          <image class="check-btn" src="{{$item.done ? '/common/check_rect.png' : '/common/blank.png'}}" onclick="toggleDone('{{$idx}}')"></image>
+          <div class="card-body">
+            <div class="card-row">
+              <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
+              <text class="todo-title" max-lines="1">{{$item.title}}</text>
+            </div>
+            <text class="todo-meta" if="{{$item.dueDate}}">{{$item.dueDate}}</text>
+          </div>
+          <image class="del-btn" src="/common/del_rect.png" onclick="deleteTodo('{{$idx}}')"></image>
+        </div>
+      </list-item>
+    </list>
+
+    <div class="fab" onclick="addTodo">
+      <image class="fab-icon" src="/common/add_rect.png"></image>
+    </div>
+  </div>
+</template>
+
+<style>
+  @import '/common/app.css';
+
+  .page {
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+  }
+
+  .page-title {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffffff;
+  }
+
+  .todo-list {
+    position: absolute;
+    top: 60px;
+    bottom: 80px;
+    left: 0;
+    right: 0;
+  }
+
+  .todo-card {
+    margin: 6px 16px;
+    padding: 0;
+  }
+
+  .card-inner {
+    flex-direction: row;
+    align-items: center;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 12px 12px;
+    width: 100%;
+  }
+
+  .check-btn {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+  }
+
+  .card-body {
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .card-row {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .priority-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    margin-right: 6px;
+  }
+
+  .todo-title {
+    font-size: 22px;
+    color: #ffffff;
+  }
+
+  .todo-meta {
+    font-size: 16px;
+    color: #6f6f6f;
+    margin-top: 4px;
+    margin-left: 12px;
+  }
+
+  .del-btn {
+    width: 24px;
+    height: 24px;
+    margin-left: 8px;
+  }
+
+  .fab {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    background-color: #ff6a24;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fab-icon {
+    width: 28px;
+    height: 28px;
+  }
+</style>
+
+<script>
+  import router from '@system.router'
+  import file from '@system.file'
+  import vibrator from '@system.vibrator'
+  import prompt from '@system.prompt'
+
+  const DATA_PATH = '/data/todos.json'
+
+  export default {
+    data() {
+      return {
+        todos: []
+      }
+    },
+    onInit() {
+      this.loadTodos()
+    },
+    onShow() {
+      this.loadTodos()
+    },
+    loadTodos() {
+      let that = this
+      file.readText({
+        uri: 'internal://app' + DATA_PATH,
+        success(ret) {
+          try {
+            let data = JSON.parse(ret.text)
+            that.todos = data || []
+          }
+          catch (e) {
+            that.todos = []
+          }
+        },
+        fail() {
+          that.todos = []
+        }
+      })
+    },
+    saveTodos() {
+      file.writeText({
+        uri: 'internal://app' + DATA_PATH,
+        text: JSON.stringify(this.todos),
+        success() {},
+        fail() {}
+      })
+    },
+    getPriorityColor(p) {
+      let colors = { '高': '#ff6a24', '中': '#ffc043', '低': '#4cd964', '无': '#6f6f6f' }
+      return colors[p] || '#6f6f6f'
+    },
+    toggleDone(idx) {
+      this.todos[idx].done = !this.todos[idx].done
+      this.saveTodos()
+      vibrator.vibrate({ mode: 1, time: 50 })
+    },
+    deleteTodo(idx) {
+      let that = this
+      prompt.showDialog({
+        title: '删除',
+        message: '确定删除此待办？',
+        buttons: [
+          { text: '取消', color: '#6f6f6f' },
+          { text: '删除', color: '#ff6a24' }
+        ],
+        success(ret) {
+          if (ret.index === 1) {
+            that.todos.splice(idx, 1)
+            that.saveTodos()
+          }
+        }
+      })
+    },
+    onSwipe(idx, ev) {
+      if (ev.direction === 'left') {
+        this.deleteTodo(idx)
+      }
+    },
+    addTodo() {
+      router.push({ uri: '/pages/input' })
+    }
+  }
+</script>

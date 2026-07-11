@@ -1,0 +1,30 @@
+<template>
+  <div>
+    <text class="title">{{ $t("appName") }}</text>
+  </div>
+</template>
+
+<script>
+  import device from "@system.device"
+
+  export default {
+    onCreate() {
+      const that = this
+      device.getInfo({
+        success: function (ret) {
+          that.$def("screenShape", ret.screenShape || "rect")
+          that.$def("deviceType", ret.deviceType || "band")
+          that.$def("screenWidth", ret.screenWidth || 336)
+          that.$def("screenHeight", ret.screenHeight || 480)
+        }
+      })
+    }
+  }
+</script>
+
+<style>
+  .title {
+    font-size: 48px;
+    color: white;
+  }
+</style>

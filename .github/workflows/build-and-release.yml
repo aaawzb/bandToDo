@@ -16,7 +16,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: 设置国内镜像源
         run: npm config set registry https://registry.npmmirror.com

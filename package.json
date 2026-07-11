@@ -1,6 +1,6 @@
 {
   "name": "todo-watch",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "极简待办 - 小米手环Pro快应用",
   "scripts": {
     "start": "aiot server --watch --open-nuttx",

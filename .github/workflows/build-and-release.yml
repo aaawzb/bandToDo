@@ -1,0 +1,58 @@
+name: Build & Pre-release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmmirror.com
+
+      - name: Install dependencies
+        run: npm install
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Build RPK
+        run: npm run build
+
+      - name: Find RPK file
+        id: find-rpk
+        run: |
+          RPK=$(find . -name "*.rpk" -type f 2>/dev/null | head -1)
+          if [ -z "$RPK" ]; then
+            echo "No .rpk found in build output"
+            find build dist release -type f 2>/dev/null || true
+            exit 1
+          fi
+          echo "path=$RPK" >> $GITHUB_OUTPUT
+          echo "name=$(basename "$RPK")" >> $GITHUB_OUTPUT
+
+      - name: Create Pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: v${{ github.run_number }} (pre-release)
+          body: |
+            ## 自动构建 #${{ github.run_number }}
+
+            - 提交: ${{ github.sha }}
+            - 构建时间: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            > 此为自动生成的 pre-release 版本，用于测试。
+          files: ${{ steps.find-rpk.outputs.path }}
+          prerelease: true
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

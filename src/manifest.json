@@ -1,8 +1,8 @@
 {
-  "package": "com.todo.watch",
+  "package": "wzb.todo.band",
   "name": "待办清单",
-  "versionName": "1.0.0",
-  "versionCode": 10001,
+  "versionName": "0.1.0",
+  "versionCode": 10010,
   "minPlatformVersion": 1000,
   "icon": "/common/logo.png",
   "deviceTypeList": ["watch"],

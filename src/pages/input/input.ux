@@ -31,7 +31,7 @@
       <div class="picker-panel">
         <text class="picker-title">设置优先级</text>
         <div class="picker-options">
-          <div class="picker-option" for="{{priorities}}" onclick="selectPriority('{{$item.value}}')">
+          <div class="picker-option" for="{{priorities}}" onclick="selectPriority($item.value)">
             <div class="prio-dot" style="background-color: {{$item.color}};"></div>
             <text class="prio-label">{{$item.label}}</text>
           </div>

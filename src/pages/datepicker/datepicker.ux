@@ -17,7 +17,7 @@
       </div>
 
       <div class="days-grid">
-        <div class="day-cell" for="{{days}}" onclick="selectDay('{{$item.day}}')">
+        <div class="day-cell" for="{{days}}" onclick="selectDay($item)">
           <text class="day-text" style="color: {{getDayColor($item)}};">{{$item.day}}</text>
           <div class="day-bg" if="{{$item.selected}}"></div>
         </div>
@@ -216,8 +216,9 @@
       this.selectedDay = 0
       this.buildDays()
     },
-    selectDay(day) {
-      if (!day) return
+    selectDay(item) {
+      if (!item || !item.day) return
+      let day = item.day
       this.selectedDay = day
       this.buildDays()
 
@@ -235,6 +236,7 @@
       this.month = now.getMonth() + 1
       this.selectedDay = now.getDate()
       this.buildDays()
+      this.selectDay({ day: this.selectedDay })
     },
     goBack() {
       router.back()

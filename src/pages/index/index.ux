@@ -3,9 +3,9 @@
     <text class="page-title">待办清单</text>
 
     <list class="todo-list">
-      <list-item class="todo-card" for="{{todos}}" type="todo" key="{{$idx}}">
-        <div class="card-inner" onswipe="onSwipe('{{$idx}}', $event)">
-          <image class="check-btn" src="{{$item.done ? '/common/check_rect.png' : '/common/blank.png'}}" onclick="toggleDone('{{$idx}}')"></image>
+      <list-item class="todo-card" for="{{todos}}" type="{{$idx}}" key="{{$idx}}">
+        <div class="card-inner" onswipe="onSwipe($idx, $event)">
+          <image class="check-btn" src="{{$item.done ? '/common/check_rect.png' : '/common/blank.png'}}" onclick="toggleDone($idx)"></image>
           <div class="card-body">
             <div class="card-row">
               <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
@@ -13,7 +13,7 @@
             </div>
             <text class="todo-meta" if="{{$item.dueDate}}">{{$item.dueDate}}</text>
           </div>
-          <image class="del-btn" src="/common/del_rect.png" onclick="deleteTodo('{{$idx}}')"></image>
+          <image class="del-btn" src="/common/del_rect.png" onclick="deleteTodo($idx)"></image>
         </div>
       </list-item>
     </list>
@@ -175,7 +175,7 @@
       return colors[p] || '#6f6f6f'
     },
     toggleDone(idx) {
-      this.todos[idx].done = !this.todos[idx].done
+      this.todos.splice(idx, 1, { ...this.todos[idx], done: !this.todos[idx].done })
       this.saveTodos()
       vibrator.vibrate({ mode: 1, time: 50 })
     },

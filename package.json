@@ -16,5 +16,24 @@
     "eslint": "^6.8.0",
     "eslint-plugin-ux": "^0.0.4"
   },
+  "eslintConfig": {
+    "root": true,
+    "parser": "babel-eslint",
+    "env": {
+      "browser": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    },
+    "plugins": ["ux"],
+    "rules": {
+      "no-unused-vars": ["warn", { "args": "none" }],
+      "no-undef": "error",
+      "semi": ["warn", "never"],
+      "quotes": ["warn", "single"]
+    }
+  },
   "browserslist": ["chrome 65"]
 }

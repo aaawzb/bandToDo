@@ -1,6 +1,6 @@
 <template>
   <div>
-    <text class="title">{{ $t("appName") }}</text>
+    <text class="title">待办清单</text>
   </div>
 </template>
 

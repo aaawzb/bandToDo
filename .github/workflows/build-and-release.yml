@@ -28,7 +28,7 @@ jobs:
       - name: 查找 RPK 文件
         id: find-rpk
         run: |
-          RPK=$(find . -name "*.rpk" -type f 2>/dev/null | head -1)
+          RPK=$(find build dist -name "*.rpk" -type f 2>/dev/null | head -1)
           if [ -z "$RPK" ]; then
             echo "未在构建输出中找到 .rpk 文件"
             find . -name "*.rpk" -type f 2>/dev/null || true

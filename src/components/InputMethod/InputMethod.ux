@@ -12,7 +12,7 @@
 <script>
 import { SimpleInputMethod } from './assets/dicUtil.js'
 
-let registered = false
+let initializingInstances = new WeakMap()
 
 export default {
   props: [
@@ -24,6 +24,7 @@ export default {
   ],
   data() {
     return {
+      _initialized: false,
       k_board: null,
       key_width_size: 0,
       key_height_size: 0,
@@ -51,8 +52,10 @@ export default {
     this.textColorNow = this.textColor || '#ffffff'
   },
   onAppear() {
-    if (registered) return
-    registered = true
+    if (this._initialized) return
+    if (initializingInstances.has(this)) return
+    initializingInstances.set(this, true)
+    this._initialized = true
     let that = this
     SimpleInputMethod.initDict()
     let canvas = this.$element('keyboardCanvas')

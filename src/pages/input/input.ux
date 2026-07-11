@@ -13,7 +13,7 @@
       <text class="display-text">{{displayText}}</text>
       <text class="cursor" if="{{showCursor}}">|</text>
       <div class="hanzi-bar" if="{{hanziList.length > 0}}">
-        <text class="hanzi-option" for="{{hanziList}}" onclick="chooseHanzi('{{$idx}}')">{{$item}}</text>
+        <text class="hanzi-option" for="{{hanziList}}" onclick="chooseHanzi($idx)">{{$item}}</text>
       </div>
     </div>
 
@@ -298,7 +298,7 @@
     chooseHanzi(idx) {
       let kb = this.$element('kb')
       if (kb && kb.chooseHanzi) {
-        kb.chooseHanzi(parseInt(idx))
+        kb.chooseHanzi(idx)
       }
     },
     showPriorityPicker() {

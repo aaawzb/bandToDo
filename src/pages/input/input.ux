@@ -23,24 +23,24 @@
     <img else class="bottom" src="/common/check.png" @click="saveTodo" />
 
     <div class="padding"></div>
-    <div class="line" @click="changeKbState">
-      <div class="input-line">
+    <div class="line">
+      <div class="input-line" @click="changeKbState">
         <scroll
-          style="position: absolute; width: 100%; height: 42px; margin: 6px 0"
+          style="width: 100%; height: 100%"
           scroll-x="true"
         >
           <text class="input-text">
-            {{textValue}}
+            {{textValue || '点击输入内容'}}
           </text>
         </scroll>
       </div>
     </div>
 
     <div class="action-bar">
-      <div class="action-btn" onclick="showPriorityPicker">
+      <div class="action-btn priority-btn" onclick="showPriorityPicker">
         <text class="priority-preview" style="color: {{getPriorityColor(selectedPriority)}};">{{priorityLabel}}</text>
       </div>
-      <div class="action-btn" onclick="showDatePicker">
+      <div class="action-btn date-btn" onclick="showDatePicker">
         <text class="action-text">{{dateLabel}}</text>
       </div>
     </div>
@@ -48,18 +48,19 @@
     <div class="priority-picker" if="{{showPriority}}">
       <div class="picker-overlay" onclick="hidePriorityPicker"></div>
       <div class="picker-panel">
-        <text class="picker-title">设置优先级</text>
+        <text class="picker-title">优先级</text>
         <div class="picker-options">
           <div class="picker-option" for="{{priorities}}" onclick="selectPriority($item.value)">
             <div class="prio-dot" style="background-color: {{$item.color}};"></div>
             <text class="prio-label">{{$item.label}}</text>
+            <img class="prio-check" if="{{$item.value === selectedPriority}}" src="/common/check.png" />
           </div>
         </div>
       </div>
     </div>
 
     <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
-<input-method
+    <input-method
       hide="{{hide}}"
       keyboardtype="{{keyboardtype}}"
       maxlength="100"
@@ -84,32 +85,36 @@
   }
 
   .line {
-    display: flex;
-    flex-direction: column;
-    justify-content: left;
     width: 90%;
+    margin-bottom: 12px;
   }
 
   .input-line {
-    height: 48px;
+    height: 64px;
     width: 100%;
     background-color: #262626;
     border: 3px solid rgba(255, 255, 255, 0.06);
-    border-radius: 100%;
-    margin-top: 4px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
   }
 
   .input-text {
     lines: 1;
-    position: absolute;
-    padding: 0 12px;
-    font-size: 24px;
+    width: 100%;
+    padding: 0 16px;
+    font-size: 28px;
     color: white;
     font-weight: bold;
+    text-overflow: ellipsis;
+  }
+
+  .input-text:empty::placeholder {
+    color: #6f6f6f;
   }
 
   .padding {
-    height: 126px;
+    height: 100px;
   }
 
   .action-bar {
@@ -121,19 +126,30 @@
   }
 
   .action-btn {
-    padding: 12px 24px;
+    padding: 10px 18px;
     background-color: #262626;
-    border-radius: 20px;
+    border-radius: 16px;
     border: 3px solid rgba(255, 255, 255, 0.06);
+    flex: 1;
+  }
+
+  .priority-btn {
+    margin-right: 8px;
+    text-align: left;
+  }
+
+  .date-btn {
+    margin-left: 8px;
+    text-align: right;
   }
 
   .priority-preview {
-    font-size: 26px;
+    font-size: 22px;
     color: white;
   }
 
   .action-text {
-    font-size: 26px;
+    font-size: 22px;
     color: #6f6f6f;
   }
 
@@ -145,24 +161,27 @@
     bottom: 0;
     flex-direction: column;
     justify-content: flex-end;
+    z-index: 100;
   }
 
   .picker-overlay {
     flex: 1;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 
   .picker-panel {
-    background-color: #262626;
-    border-radius: 16px 16px 0 0;
-    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px;
     border: 3px solid rgba(255, 255, 255, 0.06);
+    border-bottom: none;
   }
 
   .picker-title {
-    font-size: 22px;
+    font-size: 24px;
     color: #ffffff;
     text-align: center;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
 
   .picker-options {
@@ -172,19 +191,32 @@
   .picker-option {
     flex-direction: row;
     align-items: center;
-    padding: 12px 0;
+    justify-content: space-between;
+    padding: 16px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .picker-option:last-child {
+    border-bottom: none;
   }
 
   .prio-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    margin-right: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    margin-right: 16px;
   }
 
   .prio-label {
-    font-size: 20px;
+    font-size: 24px;
     color: #ffffff;
+    flex: 1;
+  }
+
+  .prio-check {
+    width: 24px;
+    height: 24px;
+    margin-left: 12px;
   }
 
   @media (device-type: band) and (shape: rect) {
@@ -192,17 +224,39 @@
       width: 83%;
     }
 
+    .action-bar {
+      width: 83%;
+    }
+
     .padding {
-      height: 108px;
+      height: 90px;
+    }
+
+    .input-line {
+      height: 56px;
+      border-radius: 14px;
+    }
+
+    .input-text {
+      font-size: 24px;
+      padding: 0 14px;
     }
 
     .action-btn {
-      padding: 10px 18px;
-      border-radius: 18px;
+      padding: 8px 14px;
+      border-radius: 14px;
     }
 
     .priority-preview,
     .action-text {
+      font-size: 20px;
+    }
+
+    .prio-label {
+      font-size: 20px;
+    }
+
+    .picker-title {
       font-size: 22px;
     }
   }
@@ -212,8 +266,12 @@
       width: 75%;
     }
 
+    .action-bar {
+      width: 75%;
+    }
+
     .padding {
-      height: 126px;
+      height: 110px;
     }
   }
 
@@ -222,8 +280,31 @@
       width: 70%;
     }
 
+    .action-bar {
+      width: 70%;
+    }
+
     .padding {
-      height: 84px;
+      height: 70px;
+    }
+
+    .input-line {
+      height: 56px;
+      border-radius: 14px;
+    }
+
+    .input-text {
+      font-size: 24px;
+    }
+
+    .action-btn {
+      padding: 8px 12px;
+      border-radius: 14px;
+    }
+
+    .priority-preview,
+    .action-text {
+      font-size: 20px;
     }
   }
 </style>
@@ -255,7 +336,7 @@
     },
     computed: {
       priorityLabel() {
-        return '!' + this.selectedPriority
+        return this.selectedPriority
       },
       dateLabel() {
         if (this.selectedDate) {

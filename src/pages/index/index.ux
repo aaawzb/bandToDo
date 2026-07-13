@@ -64,7 +64,8 @@
     height: 52px;
     margin-bottom: 24px;
     border-radius: 26px;
-    background-color: #ff6a24;
+    background-color: #262626;
+    border: 3px solid rgba(255, 255, 255, 0.06);
   }
 
   .add-fab-text {

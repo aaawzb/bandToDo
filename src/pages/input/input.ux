@@ -43,14 +43,12 @@
     <div class="priority-picker" if="{{showPriority}}">
       <div class="picker-overlay" onclick="hidePriorityPicker"></div>
       <div class="picker-panel">
-        <text class="picker-title">优先级</text>
-        <div class="picker-options">
-          <div class="picker-option {{ $idx === priorities.length - 1 ? 'picker-option-last' : '' }}" for="{{priorities}}" onclick="selectPriority($item.value)">
-            <div class="prio-dot" style="background-color: {{$item.color}};"></div>
-            <text class="prio-label">{{$item.label}}</text>
-            <img class="prio-check" if="{{$item.value === selectedPriority}}" src="/common/check_rect.png" />
-          </div>
+        <div class="picker-header">
+          <text class="picker-cancel" onclick="hidePriorityPicker">取消</text>
+          <text class="picker-title">优先级</text>
+          <text class="picker-confirm" onclick="confirmPriority">确定</text>
         </div>
+        <picker class="priority-wheel" type="text" range="{{priorityOptions}}" selected="{{priorityIndex}}" @change="onPriorityChange"></picker>
       </div>
     </div>
 
@@ -177,42 +175,30 @@
     font-size: 24px;
     color: #ffffff;
     text-align: center;
-    margin-bottom: 20px;
-  }
-
-  .picker-options {
-    flex-direction: column;
-  }
-
-  .picker-option {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .picker-option-last {
-    border-bottom: none;
-  }
-
-  .prio-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 6px;
-    margin-right: 16px;
-  }
-
-  .prio-label {
-    font-size: 24px;
-    color: #ffffff;
     flex: 1;
   }
 
-  .prio-check {
-    width: 24px;
-    height: 24px;
-    margin-left: 12px;
+  .picker-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .picker-cancel,
+  .picker-confirm {
+    font-size: 24px;
+    color: #4cd964;
+    padding: 8px;
+  }
+
+  .priority-wheel {
+    height: 200px;
+    width: 100%;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 22px;
+    selected-color: #ffffff;
+    selected-font-size: 34px;
   }
 
   @media (device-type: band) and (shape: rect) {
@@ -248,8 +234,8 @@
       font-size: 20px;
     }
 
-    .prio-label {
-      font-size: 20px;
+    .priority-wheel {
+      selected-font-size: 30px;
     }
 
     .picker-title {
@@ -323,12 +309,8 @@
       selectedPriority: '无',
       selectedDate: '',
       showPriority: false,
-      priorities: [
-        { label: '无', value: '无', color: '#6f6f6f' },
-        { label: '低', value: '低', color: '#4cd964' },
-        { label: '中', value: '中', color: '#ffc043' },
-        { label: '高', value: '高', color: '#ff6a24' }
-      ]
+      priorityOptions: ['无', '低', '中', '高'],
+      priorityIndex: 0,
     },
     computed: {
       priorityLabel() {
@@ -374,13 +356,17 @@
       this.hide = !this.hide
     },
     showPriorityPicker() {
+      this.priorityIndex = this.priorityOptions.indexOf(this.selectedPriority)
       this.showPriority = true
     },
     hidePriorityPicker() {
       this.showPriority = false
     },
-    selectPriority(val) {
-      this.selectedPriority = val
+    onPriorityChange(evt) {
+      this.priorityIndex = evt.newSelected
+    },
+    confirmPriority() {
+      this.selectedPriority = this.priorityOptions[this.priorityIndex]
       this.showPriority = false
     },
     showDatePicker() {

@@ -1,4 +1,5 @@
 <template>
+  <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
   <div class="container">
     <text class="time">{{ time }}</text>
     <text class="title" if="{{ global.screenShape == 'rect' }}">新建待办</text>
@@ -25,14 +26,9 @@
     <div class="padding"></div>
     <div class="line">
       <div class="input-line" @click="changeKbState">
-        <scroll
-          style="width: 100%; height: 100%"
-          scroll-x="true"
-        >
-          <text class="input-text" style="color: {{inputTextColor}};">
-            {{textValue || '点击输入内容'}}
-          </text>
-        </scroll>
+        <text class="input-text" style="color: {{inputTextColor}};">
+          {{textValue || '点击输入内容'}}
+        </text>
       </div>
     </div>
 
@@ -59,7 +55,6 @@
       </div>
     </div>
 
-    <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
     <input-method
       hide="{{hide}}"
       keyboardtype="{{keyboardtype}}"
@@ -105,8 +100,9 @@
     font-size: 28px;
     color: white;
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
-    height: 36px;
   }
 
   .placeholder-text {

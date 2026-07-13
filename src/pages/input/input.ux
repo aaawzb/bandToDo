@@ -1,5 +1,4 @@
 <template>
-  <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
   <div class="container">
     <text class="time">{{ time }}</text>
     <text class="title" if="{{ global.screenShape == 'rect' }}">新建待办</text>
@@ -55,6 +54,7 @@
       </div>
     </div>
 
+    <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
     <input-method
       hide="{{hide}}"
       keyboardtype="{{keyboardtype}}"

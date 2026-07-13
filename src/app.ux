@@ -9,7 +9,6 @@
 
   export default {
     onCreate() {
-      const that = this
       device.getInfo({
         success: function (ret) {
           global.screenShape = ret.screenShape || "rect"

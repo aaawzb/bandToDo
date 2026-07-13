@@ -49,13 +49,12 @@
       <div class="picker-overlay" onclick="hidePriorityPicker"></div>
       <div class="picker-panel">
         <text class="picker-title">优先级</text>
-<div class="picker-options">
+        <div class="picker-options">
           <div class="picker-option {{ $idx === priorities.length - 1 ? 'picker-option-last' : '' }}" for="{{priorities}}" onclick="selectPriority($item.value)">
             <div class="prio-dot" style="background-color: {{$item.color}};"></div>
             <text class="prio-label">{{$item.label}}</text>
             <img class="prio-check" if="{{$item.value === selectedPriority}}" src="/common/check_rect.png" />
           </div>
-        </div>
         </div>
       </div>
     </div>
@@ -101,13 +100,13 @@
   }
 
   .input-text {
-    lines: 1;
     width: 100%;
     padding: 0 16px;
     font-size: 28px;
     color: white;
     font-weight: bold;
     text-overflow: ellipsis;
+    height: 36px;
   }
 
   .placeholder-text {

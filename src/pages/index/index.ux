@@ -25,7 +25,7 @@
             <div class="card-left">
               <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
               <div class="card-content">
-                <text class="todo-title" lines="1">{{$item.title}}</text>
+                <text class="todo-title">{{$item.title}}</text>
                 <text class="todo-meta" if="{{ $item.dueDate }}">{{$item.dueDate}}</text>
               </div>
             </div>
@@ -109,7 +109,8 @@
     color: white;
     font-weight: bold;
     text-overflow: ellipsis;
-    lines: 1;
+    height: 32px;
+    width: 100%;
   }
 
   .todo-meta {

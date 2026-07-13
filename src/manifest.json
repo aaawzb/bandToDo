@@ -11,7 +11,8 @@
     { "name": "system.app" },
     { "name": "system.prompt" },
     { "name": "system.vibrator" },
-    { "name": "system.file" }
+    { "name": "system.file" },
+    { "name": "system.device" }
   ],
   "config": {
     "logLevel": "log",

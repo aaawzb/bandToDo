@@ -225,6 +225,7 @@
   import router from '@system.router'
   import file from '@system.file'
   import vibrator from '@system.vibrator'
+  import { getPriorityColor } from '../../common/utils.js'
 
   const DATA_PATH = '/data/todos.json'
 
@@ -280,8 +281,7 @@
       }
     },
     getPriorityColor(p) {
-      let colors = { '高': '#ff6a24', '中': '#ffc043', '低': '#4cd964', '无': '#6f6f6f' }
-      return colors[p] || '#6f6f6f'
+      return getPriorityColor(p)
     },
     onInput(ev) {
       this.text = ev.text
@@ -331,11 +331,16 @@
       }
 
       let that = this
-      file.readText({
+        file.readText({
         uri: 'internal://app' + DATA_PATH,
         success(ret) {
           let todos = []
-          try { todos = JSON.parse(ret.text) } catch (e) {}
+          try {
+            let parsed = JSON.parse(ret.text)
+            if (Array.isArray(parsed)) {
+              todos = parsed
+            }
+          } catch (e) {}
           todos.push(todo)
           that.writeTodos(todos)
         },

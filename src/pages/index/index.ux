@@ -129,6 +129,7 @@
   import file from '@system.file'
   import vibrator from '@system.vibrator'
   import prompt from '@system.prompt'
+  import { getPriorityColor } from '../../common/utils.js'
 
   const DATA_PATH = '/data/todos.json'
 
@@ -167,12 +168,13 @@
         uri: 'internal://app' + DATA_PATH,
         text: JSON.stringify(this.todos),
         success() {},
-        fail() {}
+        fail() {
+          prompt.showToast({ message: '保存失败' })
+        }
       })
     },
     getPriorityColor(p) {
-      let colors = { '高': '#ff6a24', '中': '#ffc043', '低': '#4cd964', '无': '#6f6f6f' }
-      return colors[p] || '#6f6f6f'
+      return getPriorityColor(p)
     },
     toggleDone(idx) {
       this.todos.splice(idx, 1, { ...this.todos[idx], done: !this.todos[idx].done })

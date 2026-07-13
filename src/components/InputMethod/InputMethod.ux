@@ -35,9 +35,6 @@ export default {
       langNow: 'cn',
       keyboardTypeNow: 'horizontal',
       textColorNow: '#ffffff',
-      isPress: false,
-      longPressTimer: null,
-      longPressKey: null,
       _inputValue: '',
       _inputCode: '',
       _inputHanziList: [],
@@ -214,7 +211,7 @@ export default {
     if (this._inputCode.length > 0) {
       this._inputCode = this._inputCode.slice(0, -1)
       if (this._inputCode.length > 0) {
-        let result = SimpleInputMethod.getHanzi(this._inputCode, this.langNow === 'en' ? 'cn' : this.langNow)
+        let result = SimpleInputMethod.getHanzi(this._inputCode, this.langNow)
         this._inputHanziList = result[0] || []
         this._inputHanziIndex = 0
         this._inputValue = this._inputHanziList[0] || this._inputCode
@@ -392,7 +389,6 @@ function createKeyboard(component) {
     ctx.fill()
 
     if (key.i) {
-      let img = ctx.createImageData(1, 1)
       try {
         let imgObj = that.$asset(`${imageBase}${imageType}/${key.i}`)
         if (imgObj) {

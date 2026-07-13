@@ -27,13 +27,28 @@
       "ecmaVersion": 2018,
       "sourceType": "module"
     },
-    "plugins": ["ux"],
+    "plugins": [
+      "ux"
+    ],
     "rules": {
-      "no-unused-vars": ["warn", { "args": "none" }],
+      "no-unused-vars": [
+        "warn",
+        {
+          "args": "none"
+        }
+      ],
       "no-undef": "error",
-      "semi": ["warn", "never"],
-      "quotes": ["warn", "single"]
+      "semi": [
+        "warn",
+        "never"
+      ],
+      "quotes": [
+        "warn",
+        "single"
+      ]
     }
   },
-  "browserslist": ["chrome 65"]
+  "browserslist": [
+    "chrome 65"
+  ]
 }

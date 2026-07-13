@@ -1,3 +1,3 @@
-const dict = {};
+const dict = {}
 
 export { dict }

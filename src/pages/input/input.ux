@@ -59,10 +59,10 @@
     </div>
 
     <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
-    <input-method
+<input-method
       hide="{{hide}}"
       keyboardtype="{{keyboardtype}}"
-      maxlength="5"
+      maxlength="100"
       vibratemode="short"
       screentype="{{screentype}}"
       @visibility-change="onVisibilityChange"
@@ -121,19 +121,19 @@
   }
 
   .action-btn {
-    padding: 6px 14px;
+    padding: 12px 24px;
     background-color: #262626;
-    border-radius: 16px;
+    border-radius: 20px;
     border: 3px solid rgba(255, 255, 255, 0.06);
   }
 
   .priority-preview {
-    font-size: 18px;
+    font-size: 26px;
     color: white;
   }
 
   .action-text {
-    font-size: 18px;
+    font-size: 26px;
     color: #6f6f6f;
   }
 
@@ -195,6 +195,16 @@
     .padding {
       height: 108px;
     }
+
+    .action-btn {
+      padding: 10px 18px;
+      border-radius: 18px;
+    }
+
+    .priority-preview,
+    .action-text {
+      font-size: 22px;
+    }
   }
 
   @media (device-type: watch) and (shape: rect) {
@@ -230,7 +240,7 @@
     private: {
       time: '',
       textValue: '',
-      hide: false,
+      hide: true,
       keyboardtype: 'QWERTY',
       screentype: 'rect',
       selectedPriority: '无',
@@ -269,7 +279,7 @@
       return getPriorityColor(p)
     },
     onVisibilityChange(evt) {
-      this.hide = evt.detail.visible
+      console.log('键盘可见性变化:' + JSON.stringify(evt))
     },
     onKeyDown(evt) {
       console.log('按下按键:' + JSON.stringify(evt))

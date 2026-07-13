@@ -16,8 +16,12 @@
 
     <div class="box">
       <scroll scroll-y="true" bounces="true">
-        <div for="{{ todos }}">
-          <div class="todo-card" onclick="toggleDone($idx)">
+        <div if="{{ todos.length === 0 }}" class="empty-state">
+          <text class="empty-text">暂无待办事项</text>
+          <text class="empty-hint">点击右上角添加</text>
+        </div>
+        <div else for="{{ todos }}">
+          <div class="todo-card" onclick="toggleDone($idx)" onlongpress="deleteTodo($idx)">
             <div class="card-left">
               <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
               <div class="card-content">
@@ -25,27 +29,16 @@
                 <text class="todo-meta" if="{{ $item.dueDate }}">{{$item.dueDate}}</text>
               </div>
             </div>
-            <div class="card-right">
-              <text class="todo-status" if="{{ $item.done }}">已完成</text>
-              <text class="todo-status undone" else>待完成</text>
-            </div>
+<div class="card-right">
+            <text class="todo-status" if="{{ $item.done }}">已完成</text>
+            <text class="todo-status undone" else>待完成</text>
+            <img class="delete-hint" if="{{ global.screenShape == 'rect' }}" src="/common/del_rect.png" />
+            <img class="delete-hint" else src="/common/del.png" />
+          </div>
           </div>
         </div>
       </scroll>
     </div>
-
-    <div if="{{ todos.length === 0 }}" class="empty-state">
-      <text class="empty-text">暂无待办事项</text>
-      <text class="empty-hint">点击右上角添加</text>
-    </div>
-
-    <img
-      if="{{ global.screenShape == 'rect' }}"
-      class="bottom rightButton"
-      src="/common/del_rect.png"
-      @click="deleteMode"
-    />
-    <img else class="bottom" src="/common/del.png" @click="deleteMode" />
   </div>
 </template>
 
@@ -143,11 +136,19 @@
     color: #6f6f6f;
   }
 
-  .empty-state {
-    position: absolute;
-    top: 40%;
+  .delete-hint {
+    width: 18px;
+    height: 18px;
+    opacity: 0.3;
+    margin-left: 8px;
+  }
+
+.empty-state {
+    flex: 1;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 
   .empty-text {
@@ -199,8 +200,7 @@
   export default {
     private: {
       time: '',
-      todos: [],
-      deleteModeActive: false
+      todos: []
     },
     onInit() {
       this.loadTodos()
@@ -259,18 +259,6 @@
             that.todos.splice(idx, 1)
             that.saveTodos()
           }
-        }
-      })
-    },
-    deleteMode() {
-      if (this.todos.length === 0) return
-      let that = this
-      prompt.showDialog({
-        title: '删除模式',
-        message: '点击要删除的待办项',
-        buttons: [{ text: '确定', color: '#ff6a24' }],
-        success() {
-          that.deleteModeActive = !that.deleteModeActive
         }
       })
     },

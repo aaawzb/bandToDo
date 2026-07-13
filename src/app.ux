@@ -21,10 +21,17 @@
             height: ret.screenHeight || 480
           }
           global.isPillShaped = ret.screenShape === "pill-shaped"
+        },
+        fail: function () {
+          global.screenShape = "rect"
+          global.deviceType = "band"
+          global.screenWidth = 336
+          global.screenHeight = 480
+          global.screenSize = { width: 336, height: 480 }
+          global.isPillShaped = false
         }
       })
-    },
-    onShow() {
+
       global.getTime = function () {
         let now = new Date()
         let h = now.getHours()
@@ -39,7 +46,8 @@
         target.setHours(0, 0, 0, 0)
         return Math.floor((now - target) / 86400000)
       }
-
+    },
+    onShow() {
       global.returnedDate = ''
     }
   }

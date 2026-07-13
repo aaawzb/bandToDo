@@ -5,7 +5,7 @@
   "versionCode": 10010,
   "minPlatformVersion": 1000,
   "icon": "/common/logo.png",
-  "deviceTypeList": ["watch"],
+  "deviceTypeList": ["watch", "band"],
   "features": [
     { "name": "system.router" },
     { "name": "system.app" },

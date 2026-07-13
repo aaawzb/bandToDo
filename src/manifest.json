@@ -12,7 +12,8 @@
     { "name": "system.prompt" },
     { "name": "system.vibrator" },
     { "name": "system.file" },
-    { "name": "system.device" }
+    { "name": "system.device" },
+    { "name": "system.interconnect" }
   ],
   "config": {
     "logLevel": "log",

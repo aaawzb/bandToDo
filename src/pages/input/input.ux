@@ -1,19 +1,38 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <image class="back-btn" src="/common/back_rect.png" onclick="goBack"></image>
-      <div class="header-title-area">
-        <text class="header-label">新建待办</text>
-        <text class="char-count">{{charCount}}</text>
-      </div>
-      <text class="save-btn" onclick="saveTodo">保存</text>
-    </div>
+  <div class="container">
+    <text class="time">{{ time }}</text>
+    <text class="title" if="{{ global.screenShape == 'rect' }}">新建待办</text>
+    <img
+      if="{{ global.screenShape == 'rect' }}"
+      class="top leftButton"
+      src="/common/back_rect.png"
+      @click="goBack"
+    />
+    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
+      <span class="iconfont">&#xe685;</span>
+      <span>新建待办</span>
+    </text>
+    <img else class="top" src="/common/back.png" @click="goBack" />
 
-    <div class="text-display-area">
-      <text class="display-text">{{displayText}}</text>
-      <text class="cursor" if="{{showCursor}}">|</text>
-      <div class="hanzi-bar" if="{{hanziList.length > 0}}">
-        <text class="hanzi-option" for="{{hanziList}}" onclick="chooseHanzi($idx)">{{$item}}</text>
+    <img
+      if="{{ global.screenShape == 'rect' }}"
+      class="top rightButton"
+      src="/common/check_rect.png"
+      @click="saveTodo"
+    />
+    <img else class="bottom" src="/common/check.png" @click="saveTodo" />
+
+    <div class="padding"></div>
+    <div class="line" @click="changeKbState">
+      <div class="input-line">
+        <scroll
+          style="position: absolute; width: 100%; height: 42px; margin: 6px 0"
+          scroll-x="true"
+        >
+          <text class="input-text">
+            {{textValue}}
+          </text>
+        </scroll>
       </div>
     </div>
 
@@ -39,126 +58,78 @@
       </div>
     </div>
 
-    <import-component name="input-method" from="../../components/InputMethod/InputMethod.ux"></import-component>
-    <input-method id="kb" canvas-width="{{kbdWidth}}" canvas-height="{{kbdHeight}}" lang="cn" keyboard-type="horizontal" text-color="#ffffff" oninput="onInput" ondone="onKeyboardDone" onback="goBack"></input-method>
+    <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
+    <input-method
+      hide="{{hide}}"
+      keyboardtype="{{keyboardtype}}"
+      maxlength="5"
+      vibratemode="short"
+      screentype="{{screentype}}"
+      @visibility-change="onVisibilityChange"
+      @key-down="onKeyDown"
+      @delete="onDelete"
+      @complete="onComplete"
+    ></input-method>
   </div>
 </template>
 
 <style>
   @import '../../common/app.css';
 
-  .page {
+  .container {
     flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #000000;
+  }
+
+  .line {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    width: 90%;
+  }
+
+  .input-line {
+    height: 48px;
     width: 100%;
-    height: 100%;
-    background-color: #000000;
+    background-color: #262626;
+    border: 3px solid rgba(255, 255, 255, 0.06);
+    border-radius: 100%;
+    margin-top: 4px;
   }
 
-  .header {
+  .input-text {
+    lines: 1;
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    flex-direction: row;
-    align-items: center;
     padding: 0 12px;
-    background-color: #000000;
-  }
-
-  .back-btn {
-    width: 28px;
-    height: 28px;
-  }
-
-  .header-title-area {
-    flex: 1;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-label {
-    font-size: 22px;
-    color: #ffffff;
-  }
-
-  .char-count {
-    font-size: 18px;
-    color: #6f6f6f;
-    margin-left: 8px;
-  }
-
-  .save-btn {
-    font-size: 20px;
-    color: #ff6a24;
-  }
-
-  .text-display-area {
-    position: absolute;
-    top: 56px;
-    left: 16px;
-    right: 16px;
-    height: 60px;
-    flex-direction: row;
-    align-items: center;
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    padding: 0 12px;
-  }
-
-  .display-text {
     font-size: 24px;
-    color: #ffffff;
-    max-lines: 1;
+    color: white;
+    font-weight: bold;
   }
 
-  .cursor {
-    font-size: 24px;
-    color: #ff6a24;
-    margin-left: 2px;
-  }
-
-  .hanzi-bar {
-    position: absolute;
-    top: 62px;
-    left: 0;
-    right: 0;
-    height: 40px;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    background-color: #1a1a1a;
-  }
-
-  .hanzi-option {
-    font-size: 22px;
-    color: #ffffff;
-    margin: 0 10px;
-    padding: 4px 8px;
-    background-color: #2a2a2a;
-    border-radius: 6px;
+  .padding {
+    height: 126px;
   }
 
   .action-bar {
-    position: absolute;
-    top: 106px;
-    left: 16px;
-    right: 16px;
-    height: 44px;
+    width: 90%;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    margin-top: 8px;
   }
 
   .action-btn {
     padding: 6px 14px;
-    background-color: #1a1a1a;
+    background-color: #262626;
     border-radius: 16px;
+    border: 3px solid rgba(255, 255, 255, 0.06);
   }
 
   .priority-preview {
     font-size: 18px;
+    color: white;
   }
 
   .action-text {
@@ -181,9 +152,10 @@
   }
 
   .picker-panel {
-    background-color: #2a2a2a;
+    background-color: #262626;
     border-radius: 16px 16px 0 0;
     padding: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.06);
   }
 
   .picker-title {
@@ -215,48 +187,63 @@
     color: #ffffff;
   }
 
-  #kb {
-    position: absolute;
-    bottom: 0;
+  @media (device-type: band) and (shape: rect) {
+    .line {
+      width: 83%;
+    }
+
+    .padding {
+      height: 108px;
+    }
+  }
+
+  @media (device-type: watch) and (shape: rect) {
+    .line {
+      width: 75%;
+    }
+
+    .padding {
+      height: 126px;
+    }
+  }
+
+  @media (device-type: watch) and (shape: circle) {
+    .line {
+      width: 70%;
+    }
+
+    .padding {
+      height: 84px;
+    }
   }
 </style>
 
 <script>
   import router from '@system.router'
   import file from '@system.file'
-  import vibrator from '@system.vibrator'
+  import prompt from '@system.prompt'
   import { getPriorityColor } from '../../common/utils.js'
 
   const DATA_PATH = '/data/todos.json'
 
   export default {
-    data() {
-      return {
-        text: '',
-        composing: '',
-        cursorIndex: 0,
-        hanziList: [],
-        selectedPriority: '无',
-        selectedDate: '',
-        showPriority: false,
-        showCursor: true,
-        priorities: [
-          { label: '无', value: '无', color: '#6f6f6f' },
-          { label: '低', value: '低', color: '#4cd964' },
-          { label: '中', value: '中', color: '#ffc043' },
-          { label: '高', value: '高', color: '#ff6a24' }
-        ],
-        kbdWidth: 336,
-        kbdHeight: 180
-      }
+    private: {
+      time: '',
+      textValue: '',
+      hide: false,
+      keyboardtype: 'QWERTY',
+      screentype: 'rect',
+      selectedPriority: '无',
+      selectedDate: '',
+      showPriority: false,
+      priorities: [
+        { label: '无', value: '无', color: '#6f6f6f' },
+        { label: '低', value: '低', color: '#4cd964' },
+        { label: '中', value: '中', color: '#ffc043' },
+        { label: '高', value: '高', color: '#ff6a24' }
+      ]
     },
     computed: {
-      displayText() {
-        return this.text + this.composing
-      },
-      charCount() {
-        return this.text.length
-      },
       priorityLabel() {
         return '!' + this.selectedPriority
       },
@@ -269,37 +256,32 @@
       }
     },
     onInit() {
-      let w = this.$def('screenWidth') || 336
-      let h = this.$def('screenHeight') || 480
-      this.kbdWidth = w
-      this.kbdHeight = Math.floor(h * 0.38)
+      this.screentype = global.screenShape || 'rect'
     },
     onShow() {
-      if (this.$app.$data && this.$app.$data.returnedDate) {
-        this.selectedDate = this.$app.$data.returnedDate
-        this.$app.$data.returnedDate = ''
+      this.time = global.getTime ? global.getTime() : ''
+      if (global.returnedDate) {
+        this.selectedDate = global.returnedDate
+        global.returnedDate = ''
       }
     },
     getPriorityColor(p) {
       return getPriorityColor(p)
     },
-    onInput(ev) {
-      this.text = ev.text
-      this.composing = ev.composing
-      this.cursorIndex = ev.cursorIndex
-      this.hanziList = ev.hanziList || []
+    onVisibilityChange(evt) {
+      this.hide = evt.detail.visible
     },
-    onKeyboardDone(ev) {
-      let fullText = ev || this.text
-      this.text = fullText
-      this.composing = ''
-      this.hanziList = []
+    onKeyDown(evt) {
+      console.log('按下按键:' + JSON.stringify(evt))
     },
-    chooseHanzi(idx) {
-      let kb = this.$element('kb')
-      if (kb && kb.chooseHanzi) {
-        kb.chooseHanzi(idx)
-      }
+    onDelete() {
+      this.textValue = this.textValue.slice(0, -1)
+    },
+    onComplete(evt) {
+      this.textValue += evt.detail.content
+    },
+    changeKbState() {
+      this.hide = !this.hide
     },
     showPriorityPicker() {
       this.showPriority = true
@@ -310,7 +292,6 @@
     selectPriority(val) {
       this.selectedPriority = val
       this.showPriority = false
-      vibrator.vibrate({ mode: 1, time: 20 })
     },
     showDatePicker() {
       router.push({ uri: '/pages/datepicker' })
@@ -319,8 +300,11 @@
       router.back()
     },
     saveTodo() {
-      let title = (this.text + this.composing).trim()
-      if (!title) return
+      let title = this.textValue.trim()
+      if (!title) {
+        prompt.showToast({ message: '请输入待办内容' })
+        return
+      }
 
       let todo = {
         title: title,
@@ -331,7 +315,7 @@
       }
 
       let that = this
-        file.readText({
+      file.readText({
         uri: 'internal://app' + DATA_PATH,
         success(ret) {
           let todos = []
@@ -357,7 +341,7 @@
           router.back()
         },
         fail() {
-          router.back()
+          prompt.showToast({ message: '保存失败' })
         }
       })
     }

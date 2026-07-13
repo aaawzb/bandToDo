@@ -1,126 +1,189 @@
 <template>
-  <div class="page">
-    <text class="page-title">待办清单</text>
+  <div class="index-page">
+    <text class="time">{{ time }}</text>
+    <text class="title" if="{{ global.screenShape == 'rect' }}">待办清单</text>
+    <img
+      if="{{ global.screenShape == 'rect' }}"
+      class="top rightButton"
+      src="/common/add_rect.png"
+      @click="addTodo"
+    />
+    <text @click="addTodo" class="title" elif="{{ global.screenShape == 'circle' }}">
+      <span class="iconfont">&#xe685;</span>
+      <span>待办清单</span>
+    </text>
+    <img else class="top" src="/common/add.png" @click="addTodo" />
 
-    <list class="todo-list">
-      <list-item class="todo-card" for="{{todos}}" type="{{$idx}}" key="{{$idx}}">
-        <div class="card-inner" onswipe="onSwipe($idx, $event)">
-          <image class="check-btn" src="{{$item.done ? '/common/check_rect.png' : '/common/blank.png'}}" onclick="toggleDone($idx)"></image>
-          <div class="card-body">
-            <div class="card-row">
+    <div class="box">
+      <scroll scroll-y="true" bounces="true">
+        <div for="{{ todos }}">
+          <div class="todo-card" onclick="toggleDone($idx)">
+            <div class="card-left">
               <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
-              <text class="todo-title" max-lines="1">{{$item.title}}</text>
+              <div class="card-content">
+                <text class="todo-title" lines="1">{{$item.title}}</text>
+                <text class="todo-meta" if="{{ $item.dueDate }}">{{$item.dueDate}}</text>
+              </div>
             </div>
-            <text class="todo-meta" if="{{$item.dueDate}}">{{$item.dueDate}}</text>
+            <div class="card-right">
+              <text class="todo-status" if="{{ $item.done }}">已完成</text>
+              <text class="todo-status undone" else>待完成</text>
+            </div>
           </div>
-          <image class="del-btn" src="/common/del_rect.png" onclick="deleteTodo($idx)"></image>
         </div>
-      </list-item>
-    </list>
-
-    <div class="fab" onclick="addTodo">
-      <image class="fab-icon" src="/common/add_rect.png"></image>
+      </scroll>
     </div>
+
+    <div if="{{ todos.length === 0 }}" class="empty-state">
+      <text class="empty-text">暂无待办事项</text>
+      <text class="empty-hint">点击右上角添加</text>
+    </div>
+
+    <img
+      if="{{ global.screenShape == 'rect' }}"
+      class="bottom rightButton"
+      src="/common/del_rect.png"
+      @click="deleteMode"
+    />
+    <img else class="bottom" src="/common/del.png" @click="deleteMode" />
   </div>
 </template>
 
 <style>
-  @import '../../common/app.css';
+  @import "../../common/app.css";
 
-  .page {
+  .index-page {
     flex-direction: column;
+    align-items: center;
+    color: white;
+    background-color: black;
+  }
+
+  .box {
+    position: relative;
+    flex: 1;
+    width: 90%;
+    margin-top: 86px;
+    margin-bottom: 86px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  scroll {
+    flex: 1;
     width: 100%;
-    height: 100%;
-    background-color: #000000;
-  }
-
-  .page-title {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #ffffff;
-  }
-
-  .todo-list {
-    position: absolute;
-    top: 60px;
-    bottom: 80px;
-    left: 0;
-    right: 0;
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .todo-card {
-    margin: 6px 16px;
-    padding: 0;
-  }
-
-  .card-inner {
+    display: flex;
     flex-direction: row;
     align-items: center;
-    background-color: #1a1a1a;
-    border-radius: 12px;
-    padding: 12px 12px;
     width: 100%;
+    height: 78px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background-color: #262626;
+    border: 3px solid rgba(255, 255, 255, 0.06);
   }
 
-  .check-btn {
-    width: 28px;
-    height: 28px;
+  .card-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+    padding-left: 12px;
+  }
+
+  .priority-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
     margin-right: 10px;
   }
 
-  .card-body {
+  .card-content {
     flex: 1;
     flex-direction: column;
   }
 
-  .card-row {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .priority-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 3px;
-    margin-right: 6px;
-  }
-
   .todo-title {
-    font-size: 22px;
-    color: #ffffff;
+    font-size: 26px;
+    color: white;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    lines: 1;
   }
 
   .todo-meta {
-    font-size: 16px;
+    font-size: 18px;
     color: #6f6f6f;
     margin-top: 4px;
-    margin-left: 12px;
   }
 
-  .del-btn {
-    width: 24px;
-    height: 24px;
-    margin-left: 8px;
-  }
-
-  .fab {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 28px;
-    background-color: #ff6a24;
+  .card-right {
+    display: flex;
     justify-content: center;
+    align-items: center;
+    width: 25%;
+    height: 100%;
+  }
+
+  .todo-status {
+    font-size: 18px;
+    color: #4cd964;
+    font-weight: bold;
+  }
+
+  .todo-status.undone {
+    color: #6f6f6f;
+  }
+
+  .empty-state {
+    position: absolute;
+    top: 40%;
+    flex-direction: column;
     align-items: center;
   }
 
-  .fab-icon {
-    width: 28px;
-    height: 28px;
+  .empty-text {
+    font-size: 28px;
+    color: #6f6f6f;
+    font-weight: bold;
+  }
+
+  .empty-hint {
+    font-size: 20px;
+    color: #3a3a3a;
+    margin-top: 12px;
+  }
+
+  @media (device-type: band) and (shape: rect) {
+    .box {
+      margin-top: 92px;
+      margin-bottom: 16px;
+      width: 83%;
+    }
+  }
+
+  @media (device-type: watch) and (shape: rect) {
+    .box {
+      margin-top: 102px;
+      margin-bottom: 32px;
+      width: 75%;
+    }
+  }
+
+  @media (device-type: watch) and (shape: circle) {
+    .box {
+      margin-top: 92px;
+      margin-bottom: 84px;
+      width: 70%;
+    }
   }
 </style>
 
@@ -134,15 +197,16 @@
   const DATA_PATH = '/data/todos.json'
 
   export default {
-    data() {
-      return {
-        todos: []
-      }
+    private: {
+      time: '',
+      todos: [],
+      deleteModeActive: false
     },
     onInit() {
       this.loadTodos()
     },
     onShow() {
+      this.time = global.getTime ? global.getTime() : ''
       this.loadTodos()
     },
     loadTodos() {
@@ -177,9 +241,9 @@
       return getPriorityColor(p)
     },
     toggleDone(idx) {
-      this.todos.splice(idx, 1, { ...this.todos[idx], done: !this.todos[idx].done })
+      this.todos.splice(idx, 1, Object.assign({}, this.todos[idx], { done: !this.todos[idx].done }))
       this.saveTodos()
-      vibrator.vibrate({ mode: 1, time: 50 })
+      vibrator.vibrate({ mode: 'short' })
     },
     deleteTodo(idx) {
       let that = this
@@ -198,10 +262,17 @@
         }
       })
     },
-    onSwipe(idx, ev) {
-      if (ev.direction === 'left') {
-        this.deleteTodo(idx)
-      }
+    deleteMode() {
+      if (this.todos.length === 0) return
+      let that = this
+      prompt.showDialog({
+        title: '删除模式',
+        message: '点击要删除的待办项',
+        buttons: [{ text: '确定', color: '#ff6a24' }],
+        success() {
+          that.deleteModeActive = !that.deleteModeActive
+        }
+      })
     },
     addTodo() {
       router.push({ uri: '/pages/input' })

@@ -1,485 +1,839 @@
 <template>
-  <div style="flex-direction:column;">
-    <stack onappear="onAppear">
-      <canvas id="keyboardCanvas" style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;"></canvas>
-    </stack>
+  <div class="page" style="flex-direction: column;" show="{{!hide}}">
+    <div style="background-color:black" >
+      <!-- 圆屏62 -->
+      <div if="{{screentype==='circle'}}" style="width: 480px;height: 321px;">
+        <!-- 全键盘 -->
+        <div id="full-keyboard" if="{{keyboardtype!='T9'}}" style="width: 480px;height: 321px;">
+          <img src="./assets/full/back2.png" style="position: absolute;top:38px;left:7px;width:466px;height:52px;" @click="onBtnClick('switchCn')" show="{{numFlag}}" />
+          <img src="./assets/full/123.png" style="position: absolute;top:266px;left:119px;width:120px;height:48px;" @click="onBtnClick('switchNum')" show="{{downFlag==='' && !numFlag && lang==='cn'}}" />
+          <img src="./assets/full/123.png" style="position: absolute;top:266px;left:119px;width:120px;height:48px;" @click="onBtnClick('switchNum_jp')" show="{{downFlag==='' && !numFlag && lang==='jp'}}" />
+          <img src="./assets/full/bigA.png" style="position: absolute;top:266px;left:119px;width:120px;height:48px;" @click="onBtnClick('switchLow')" show="{{downFlag==='' && upperFlag && lang==='en'}}" />
+          <img src="./assets/full/A.png" style="position: absolute;top:266px;left:119px;width:120px;height:48px;" @click="onBtnClick('switchUpper')" show="{{downFlag==='' && !upperFlag && lang==='en'}}" />
+          <div style="position: absolute;top:38px;left:78px;width:324px;height:52px;background-color:rgb(38,38,38);border-radius: 12px;border: 3px solid #333333" show="{{downFlag===''&& !numFlag}}"></div>
+          <img show="{{resultList.length > 0}}" style="position: absolute;top:43px;left:355px;" src="./assets/full/down.png" @click="onBtnClick('down')" />
+          <img src="./assets/full/{{lang}}.png" style="position: absolute;top:38px;left:7px;width:67px;height:52px;" @click="onBtnClick('lang')" if="{{downFlag==='' && !numFlag && lang!='jp'}}" />
+          <img src="./assets/full/jp.png" style="position: absolute;top:38px;left:7px;width:67px;height:52px;" @click="onBtnClick('lang')" if="{{downFlag==='' && !numFlag && lang==='jp'}}" />
+          <div style="position: absolute;top:-4px;left:78px;width:324px;" show="{{downFlag==='' && !numFlag && cval}}">
+            <text class="caltext" style="width:296px;"> {{cval}}_ </text>
+          </div>
+          <div style="position: absolute;top:38px;left:80px;width:277px" show="{{(lang === 'cn' || lang === 'jp') && !numFlag}}">
+            <div class="item column center" for="{{cvalList}}">
+              <input show='{{resultList.length > $idx}}' class="calbtn0" type="button" value="{{resultList[$idx]}}" @click="onRsSelect(resultList[$idx])" />
+            </div>
+          </div>
+          <div style="position: absolute;top:38px;left:80px;width:320px;height:52px;align-content: center;align-items: center;justify-content: center" show="{{downFlag==='' && !numFlag && lang==='en'}}" @click="onBtnClick('switchNum')" >
+            <img src="./assets/full/123_boardless.png" />
+          </div>
+          <list class="list3" if="{{downFlag==='down'}}">
+            <list-item type="waitingRows62t9" class="item3" for="{{itemArray in resultList2}}">
+              <div class="item column center" style="height:52px;" for="{{item in itemArray}}">
+                <input class="calbtn0" type="button" value="{{item}}" @click="onRsSelect(item)" />
+              </div>
+            </list-item>
+          </list>
+          <div style="position: absolute;top:95px;left:8px;width:464px;height:52px;" show="{{downFlag===''&&!numFlag}}">
+            <img src="./assets/full/Q.png" style="width:54px;height:52px;margin-right: 4px;" @click="onSelect('Q')" />
+            <text class="calbtnfull" for="{{item in keys['full62'][0]}}" @click="onSelect(item)">{{item}}</text>
+            <img src="./assets/full/P.png" style="width:54px;height:52px;" @click="onSelect('P')" />
+          </div>
+          <div style="position: absolute;top:152px;left:23px;width:438px;height:52px;" show="{{downFlag===''&&!numFlag}}">
+            <img src="./assets/full/btA.png" style="width:60px;height:52px;margin-right: 4px;" @click="onSelect('A')" />
+            <text class="calbtnfull" for="{{item in keys['full62'][1]}}" @click="onSelect(item)">{{item}}</text>
+            <img src="./assets/full/L.png" style="width:60px;height:52px;" @click="onSelect('L')" />
+          </div>
+          <div style="position: absolute;top:209px;left:56px;width:368px;height:52px;" show="{{downFlag===''&&!numFlag}}">
+            <img src="./assets/full/Z.png" style="width:72px;height:52px;margin-right: 4px;" @click="onSelect('Z')" />
+            <text class="calbtnfull" for="{{item in keys['full62'][2]}}" @click="onSelect(item)">{{item}}</text>
+            <img src="./assets/full/M.png" style="width:72px;height:52px;" @click="onSelect('M')" />
+          </div>
+          <div style="position: absolute;top:95px;left:8px;width:464px;height:52px;" show="{{numFlag}}">
+            <img src="./assets/full/1.png" style="width:54px;height:52px;margin-right: 4px;" @click="onSelect('1')" />
+            <text if="{{!numFlag_jp}}" class="calbtnfull" for="{{item in keys['sign62'][0]}}" @click="onSelect(item)">{{item}}</text>
+            <text else class="calbtnfull" for="{{item in keys['sign62_jp'][0]}}" @click="onSelect(item)">{{item}}</text>
+            <img src="./assets/full/0.png" style="width:54px;height:52px;" @click="onSelect('0')" />
+          </div>
+          <div style="position: absolute;top:152px;left:23px;width:438px;height:52px;" show="{{numFlag}}">
+            <img src="./assets/full/2-1.png" style="width:60px;height:52px;margin-right: 4px;" @click="onSelect('~')" />
+            <text if="{{!numFlag_jp}}" class="calbtnfull" for="{{item in keys['sign62'][1]}}" @click="onSelect(item)">{{item}}</text>
+            <text else class="calbtnfull" for="{{item in keys['sign62_jp'][1]}}" @click="onSelect(item)">{{item}}</text>
+            <img src="./assets/full/2-2.png" style="width:60px;height:52px;" @click="onSelect('?')" />
+          </div>
+          <div style="position: absolute;top:209px;left:56px;width:368px;height:52px;" show="{{numFlag}}">
+            <img src="./assets/full/3-1.png" style="width:72px;height:52px;margin-right: 4px;" @click="onSelect('(')" />
+            <text if="{{!numFlag_jp}}" class="calbtnfull" for="{{item in keys['sign62'][2]}}" @click="onSelect(item)">{{item}}</text>
+            <text else class="calbtnfull" for="{{item in keys['sign62_jp'][2]}}" @click="onSelect(item)">{{item}}</text>
+            <img src="./assets/full/3-2.png" style="width:72px;height:52px;" @click="onSelect('、')" />
+          </div>
+          <img src="./assets/full/del.png" style="position: absolute;top:38px;left:406px;width:67px;height:52px;" @click="onBtnClick('D')" show="{{downFlag==='' && !numFlag }}" />
+          <img src="./assets/full/space.png" style="position: absolute;top:266px;left:242px;width:120px;height:48px;" @click="onBtnClick('space')" show="{{downFlag==='' && !numFlag }}" />
+          <img src="./assets/full/4-2.png" style="position: absolute;top:266px;left:242px;width:120px;height:48px;" @click="onSelect('。')" show="{{numFlag }}" />
+          <img src="./assets/full/4-1.png" style="position: absolute;top:266px;left:119px;width:120px;height:48px;" @click="onSelect('，')" show="{{numFlag && !numFlag_jp}}" />
+          <img src="./assets/full/4-1.png" style="position: absolute;top:266px;left:119px;width:120px;height:48px;" @click="onSelect('、')" show="{{numFlag_jp}}" />
+          <img style="position: absolute;top:204px;left:78px;" src="./assets/full/up.png" @click="onBtnClick('down')" show="{{downFlag==='down'}}" />
+        </div>
+        <!-- 九键 -->
+        <div else style="width: 480px;height: 321px;">
+          <img src="./assets/t9/back2.png" style="position: absolute;top:35px;left:31px;width: 60px;height: 60px;" @click="onBtnClick('switchCn')" show="{{numFlag}}" />
+          <img src="./assets/t9/123.png" style="position: absolute;top:99px;left:31px;width: 60px;height: 60px;" @click="onBtnClick('switchNum')" show="{{downFlag==='' && !numFlag && lang==='cn'}}" />
+          <img src="./assets/t9/bigA.png" style="position: absolute;top:99px;left:31px;width: 60px;height: 60px;" @click="onBtnClick('switchLow')" show="{{downFlag==='' && !numFlag && upperFlag && lang==='en'}}" />
+          <img src="./assets/t9/a.png" style="position: absolute;top:99px;left:31px;width: 60px;height: 60px;" @click="onBtnClick('switchUpper')" show="{{downFlag==='' && !numFlag && !upperFlag && lang==='en'}}" />
+          <div style="position: absolute;top:35px;left:95px;width:290px;height:60px;background-color:rgb(38,38,38);border-radius: 999px;border: 3px solid #333333" show="{{downFlag===''&& !numFlag}}"></div>
+          <img show="{{resultList.length > 0}}" style="position: absolute;top:44px;left:338px;" src="./assets/full/down.png" @click="onBtnClick('down')" />
+          <img src="./assets/t9/{{lang}}.png" style="position: absolute;top:35px;left:31px;width: 60px;height: 60px;" @click="onBtnClick('lang')" if="{{downFlag==='' && !numFlag}}" />
+          <div style="position: absolute;top:-4px;left:95px;width:145px;height:40px;" show="{{downFlag==='' && !numFlag && cval}}">
+            <text class="caltext" style="width:145px;"> {{cval}}_ </text>
+          </div>
+          <div show="{{downFlag==='' && !numFlag}}" style="position: absolute;top:-4px;left:240px;width:145px;height:40px;justify-content:flex-end">
+            <text for="{{waitingList}}" class="waiting-keys" style="color:{{$idx===waitingIndex ? 'rgb(13,132,255)' : 'white'}};" @click="onSelectWaiting($idx)">{{waitingList[$idx]}}</text>
+          </div>
+          <div style="position: absolute;top:39px;left:105px;width:233px" show="{{lang === 'cn' && !numFlag}}">
+            <div class="item column center" for="{{cvalList}}">
+              <input show='{{resultList.length > $idx}}' class="calbtn0" type="button" value="{{resultList[$idx]}}" @click="onRsSelect(resultList[$idx])" />
+            </div>
+          </div>
+          <div style="position: absolute;top:35px;left:95px;width:290px;height:60px;align-content: center;align-items: center;justify-content: center" show="{{downFlag==='' && !numFlag && lang==='en'}}" @click="onBtnClick('switchNum')" >
+            <img src="./assets/full/123_boardless.png" />
+          </div>
+          <list class="list3" if="{{downFlag==='down'}}">
+            <list-item type="waitingRows62full" class="item3" for="{{itemArray in resultList2}}">
+              <div class="item column center" style="height:52px;" for="{{item in itemArray}}">
+                <input class="calbtn0" type="button" value="{{item}}" @click="onRsSelect(item)" />
+              </div>
+            </list-item>
+          </list>
+          <div style="position: absolute;top:99px;left:95px;width:294px;height:60px;" show="{{downFlag===''&&!numFlag}}">
+            <text class="calbtnt9" @click="onSelect('select')">选择</text>
+            <text class="calbtnt9" for="{{item in keys['t9'][0]}}" @click="onSelect(item)">{{item.toUpperCase()}}</text>
+          </div>
+          <div style="position: absolute;top:163px;left:95px;width:294px;height:60px;" show="{{downFlag===''&&!numFlag}}">
+            <text class="calbtnt9" for="{{item in keys['t9'][1]}}" @click="onSelect(item)">{{item.toUpperCase()}}</text>
+          </div>
+          <div style="position: absolute;top:227px;left:95px;width:294px;height:60px;" show="{{downFlag===''&&!numFlag}}">
+            <text class="calbtnt9" for="{{item in keys['t9'][2]}}" @click="onSelect(item)">{{item.toUpperCase()}}</text>
+          </div>
+          <div style="position: absolute;top:35px;left:95px;width:294px;height:60px;" show="{{numFlag}}">
+            <text class="calbtnt9" @click="onSelect('7')">7</text>
+            <text class="calbtnt9" @click="onSelect('8')">8</text>
+            <text class="calbtnt9" @click="onSelect('9')">9</text>
+          </div>
+          <div style="position: absolute;top:99px;left:95px;width:294px;height:60px;" show="{{numFlag}}">
+            <text class="calbtnt9" @click="onSelect('4')">4</text>
+            <text class="calbtnt9" @click="onSelect('5')">5</text>
+            <text class="calbtnt9" @click="onSelect('6')">6</text>
+          </div>
+          <div style="position: absolute;top:163px;left:95px;width:294px;height:60px;" show="{{numFlag}}">
+            <text class="calbtnt9" @click="onSelect('1')">1</text>
+            <text class="calbtnt9" @click="onSelect('2')">2</text>
+            <text class="calbtnt9" @click="onSelect('3')">3</text>
+          </div>
+          <div style="position: absolute;top:227px;left:95px;width:294px;height:60px;" show="{{numFlag}}">
+            <text class="calbtnt9" @click="onSelect('，')">，</text>
+            <text class="calbtnt9" @click="onSelect('0')">0</text>
+            <text class="calbtnt9" @click="onSelect('。')">。</text>
+          </div>
+          <img src="./assets/t9/del.png" style="position: absolute;top:35px;left:389px;width: 60px;height: 60px;" @click="onBtnClick('D')" show="{{downFlag==='' }}" />
+          <img src="./assets/t9/space.png" style="position: absolute;top:99px;left:389px;width: 60px;height: 60px;" @click="onBtnClick('space')" show="{{downFlag==='' && !numFlag }}" />
+          <img style="position: absolute;top:204px;left:78px;" src="./assets/full/up.png" @click="onBtnClick('down')" show="{{downFlag==='down'}}" />
+        </div>
+      </div>
+      <!-- 方屏67 -->
+      <div if="{{screentype==='rect'}}" style="width: 100%;height: 255px;flex-direction: column">
+        <!-- 九键中文 -->
+        <div if="{{keyboardtype=='T9' && !numFlag}}" style="position:absolute;top:-11px;width:100%;height:276px;justify-content: center;">
+          <div style="top:77px;height:189px;width:100%;align-items: stretch;justify-content: space-between;flex-direction: column;padding:6px 3px">
+            <div class="keyboard-rows-rect-t9">
+              <text class="calbtnt9 calbtnt9-rect" @click="onSelect('select')">
+                选择
+                <span if="{{waitingList.length != 0}}" class="waiting-keys" style="color:rgb(13,132,255);" @click="onSelectWaiting(waitingIndex)">
+                  {{waitingList[waitingIndex].toUpperCase()}}
+                </span>
+              </text>
+              <text class="calbtnt9 calbtnt9-rect" for="{{item in keys['t9'][0]}}" @click="onSelect(item)">{{item.toUpperCase()}}</text>
+            </div>
+            <div class="keyboard-rows-rect-t9">
+              <text class="calbtnt9 calbtnt9-rect" for="{{item in keys['t9'][1]}}" @click="onSelect(item)">{{item.toUpperCase()}}</text>
+            </div>
+            <div class="keyboard-rows-rect-t9">
+              <text class="calbtnt9 calbtnt9-rect" for="{{item in keys['t9'][2]}}" @click="onSelect(item)">{{item.toUpperCase()}}</text>
+            </div>
+          </div>
+        </div>
+        <div else style="position:absolute;top:-11px;width:100%;height:276px;justify-content: center">
+          <progress percent="{{percent67}}" style="position:absolute;bottom: 12px;width:80px;color:#ffffff;stroke-width:6px;layer-color:#262626;"></progress>
+          <scroll id="keyboard67" scroll-x="{{true}}" onscroll="handelScroll">
+            <div if="{{!numFlag}}" style="left: 6px; flex-direction: column;">
+              <div static style="margin-left: 0px;margin-top: 0px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['full'][0]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 32px;margin-top: -5px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['full'][1]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 64px;margin-top: -5px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['full'][2]}}" @click="onSelect(item)">{{item}}</text>
+                <img static src="./assets/horizontal/space.png" style="width: 60px;height: 60px;" @click="onBtnClick('space')" />
+              </div>
+            </div>
+            <div if="{{numFlag && !numFlag_jp}}" style="left: 6px; flex-direction: column;">
+              <div static style="margin-left: 0px;margin-top: 0px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['sign'][0]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 32px;margin-top: -5px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['sign'][1]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 64px;margin-top: -5px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['sign'][2]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+            </div>
+            <div if="{{numFlag_jp}}" style="left: 6px; flex-direction: column;">
+              <div static style="margin-left: 0px;margin-top: 0px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['sign_jp'][0]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 32px;margin-top: -5px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['sign_jp'][1]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 64px;margin-top: -5px;height: 60px;">
+                <text class="calbtn67" for="{{item in keys['sign_jp'][2]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+            </div>
+          </scroll>
+        </div>
+        <div style="width: 100%; flex-direction: row; justify-content: center; top:6px; padding:0 6px;">
+          <img src="./assets/horizontal/cn.png" style="padding: 6px;width: 60px;height: 60px;" @click="onBtnClick('lang')" if="{{downFlag==='' && !numFlag && lang==='cn'}}" />
+          <img src="./assets/horizontal/jp.png" style="padding:6px;width:60px;height:60px;" @click="onBtnClick('lang')" if="{{downFlag==='' && !numFlag && lang==='jp'}}" />
+          <div if="{{(lang === 'cn' || lang === 'jp') && !numFlag}}" style="margin-left: 6px;flex: 1;height: 60px;background-color:#262626;border-color: #333333; border-width: 3px; border-radius: 100px;flex-direction: row;align-items:center">
+            <scroll id="cvalWaiting" scroll-x="{{true}}" style="position:absolute;width: 85%;height: 42px;">
+              <div static style="position: absolute;left: 0px;height: 42px;padding-left:20px;padding-right:20px">
+                <text class="calbtn02" style="padding-right:10px" @click="pushCval">{{cval}}</text>
+                <text for="{{cvalList}}" show="{{resultList.length > $idx}}" class="calbtn02" style="padding-right:10px" @click="onRsSelect(resultList[$idx])">{{resultList[$idx]}}</text>
+              </div>
+            </scroll>
+            <img if="{{resultList.length > 0}}" style="position:absolute;right: 8px; width: 60px;height: 40px;" src="./assets/horizontal/down2.png" @click="onBtnClick('down')" />
+          </div>
+          <img src="./assets/horizontal/123.png" style="margin-left:6px;padding:6px;width:60px;height:60px;" @click="onBtnClick('switchNum_jp')" if="{{downFlag==='' && !numFlag && lang==='jp'}}" />
+
+          <img src="./assets/horizontal/en.png" style="padding: 6px;width: 60px;height: 60px;" @click="onBtnClick('lang')" if="{{downFlag==='' && !numFlag && lang==='en'}}" />
+          <img src="./assets/horizontal/bigA.png" style="padding: 6px;margin-left: 6px;width:94px;height:60px;" @click="onBtnClick('switchLow')" if="{{downFlag==='' && upperFlag && lang==='en'&& !numFlag}}" />
+          <img src="./assets/horizontal/a.png" style="padding: 6px;margin-left: 6px;width:94px;height:60px;" @click="onBtnClick('switchUpper')" if="{{downFlag==='' && !upperFlag && lang==='en'&& !numFlag}}" />
+          <img src="./assets/horizontal/123.png" style="margin-left: 6px;padding: 6px;margin-left: 6px;width: 94px;height: 60px;" @click="onBtnClick('switchNum')" if="{{downFlag==='' && !numFlag && lang==='en'}}" />
+          <img src="./assets/horizontal/back2.png" style="margin-left: 6px;padding: 6px;width: 159px;height: 60px;" @click="onBtnClick('switchCn')" if="{{numFlag}}" />
+          <img if="{{!numFlag}}" src="./assets/horizontal/del.png" style="margin-left: 6px;padding: 6px;width: 60px;height: 60px;" @click="onBtnClick('D')" />
+          <img else src="./assets/horizontal/del2.png" style="margin-left: 6px;padding: 6px;" @click="onBtnClick('D')" />
+        </div>
+        <div style="position: absolute;left: 0px;top: 0px;width: 100%;height: 252px;background-color: black; justify-content:center; flex-direction:column; align-items:center" if="{{downFlag==='down'}}">
+          <div static class="list67">
+            <list static style="width:100%;height:100%;">
+              <list-item type="waitingRows67" class="item67" for="{{itemArray in resultList2}}">
+                <div class="item column center" for="{{item in itemArray}}">
+                  <input class="calbtn02" type="button" value="{{item}}" @click="onRsSelect(item)" />
+                </div>
+              </list-item>
+            </list>
+          </div>
+          <img static style="margin-top:5px" src="./assets/horizontal/up2.png" @click="onBtnClick('down')" />
+        </div>
+      </div>
+      <!-- 胶囊屏66 -->
+      <div if="{{screentype==='pill-shaped'}}" style="width: 100%;height: 305px">
+        <div static style="position:absolute;left:0px;top:34px;width:100%;height:276px;">
+          <progress percent="{{30+percent66}}" type="arc" style="start-angle:204deg;total-angle:-48deg;width:188px;height:188px;top:82px;left:2px;position:absolute;color:#ffffff;stroke-width:6px;layer-color:#262626;margin-left: {{(screenWidth - 192)/2}}px;"></progress>
+          <scroll id="keyboard66" scroll-x="{{true}}" onscroll="handelScroll" style="padding-left: {{(screenWidth - 192)/2}}px;padding-right: {{(screenWidth - 192)/2}}px;">
+            <div if="{{!numFlag}}" style="left: 3px; flex-direction: column;">
+              <div static style="margin-left: 0px;margin-top: 0px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['full'][0]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 32px;margin-top: -5px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['full'][1]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 64px;margin-top: -5px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['full'][2]}}" @click="onSelect(item)">{{item}}</text>
+                <img static src="./assets/arc/space.png" style="width: 60px;height: 60px;" @click="onBtnClick('space')" />
+              </div>
+            </div>
+            <div if="{{numFlag && !numFlag_jp}}" style="left: 3px; flex-direction: column;">
+              <div static style="margin-left: 0px;margin-top: 0px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['sign'][0]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 32px;margin-top: -5px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['sign'][1]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 64px;margin-top: -5px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['sign'][2]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+            </div>
+            <div if="{{numFlag_jp}}" style="left: 3px; flex-direction: column;">
+              <div static style="margin-left: 0px;margin-top: 0px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['sign_jp'][0]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 32px;margin-top: -5px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['sign_jp'][1]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+              <div static style="margin-left: 64px;margin-top: -5px;height: 60px;">
+                <text class="calbtn66" for="{{item in keys['sign_jp'][2]}}" @click="onSelect(item)">{{item}}</text>
+              </div>
+            </div>
+          </scroll>
+        </div>
+        <div static style="position: absolute;left: {{(screenWidth - 192)/2}}px;top: 0px;width: 192px;height: 110px;">
+          <img static style="position: absolute;left: 3px;top: 47px;width: 186px;height: 60px;" src="./assets/arc/search.png" />
+          <scroll id="cvalWaiting" scroll-x="{{true}}" style="position: absolute;left: 15px;top: 56px;width: 144px;height: 42px;">
+            <div style="position: absolute;left: 0px;top: 0px;height: 42px;padding-right:20px">
+              <text class="calbtn02" style="padding-right:10px" @click="pushCval">{{cval}}</text>
+              <text for="{{cvalList}}" show="{{resultList.length > $idx}}" class="calbtn02" style="padding-right:10px" @click="onRsSelect(resultList[$idx])">{{resultList[$idx]}}</text>
+            </div>
+          </scroll>
+          <img show="{{resultList.length > 0}}" style="position: absolute;left: 120px;top: 57px;width: 60px;height: 40px;" src="./assets/arc/down2.png" @click="onBtnClick('down')" />
+          <img src="./assets/arc/{{lang}}.png" style="position: absolute;top:0px;left:9px;width: 48px;height: 42px;" @click="onBtnClick('lang')" show="{{downFlag==='' && !numFlag && !numFlag_jp}}" />
+          <img src="./assets/arc/back2.png" style="position: absolute;top:0px;left:9px;width: 48px;height: 42px;" @click="onBtnClick('switchCn')" show="{{numFlag && lang==='cn' ||numFlag_jp && lang==='jp' }}" />
+          <img src="./assets/arc/123.png" style="position: absolute;left: 70px;top: 0px;width: 52px;height: 42px;" @click="onBtnClick('switchNum')" show="{{downFlag==='' && !numFlag && lang==='cn'}}" />
+          <img src="./assets/arc/123.png" style="position: absolute;left: 70px;top: 0px;width: 52px;height: 42px;" @click="onBtnClick('switchNum_jp')" show="{{downFlag==='' && !numFlag_jp && lang==='jp'}}" />
+          <img src="./assets/arc/bigA.png" style="position: absolute;top:0px;left:72px;width:48px;height:42px;" @click="onBtnClick('switchLow')" show="{{downFlag==='' && upperFlag && lang==='en' }}" />
+          <img src="./assets/arc/a.png" style="position: absolute;top:0px;left:72px;width:48px;height:42px;" @click="onBtnClick('switchUpper')" show="{{downFlag==='' && !upperFlag && lang==='en' }}" />
+          <img src="./assets/arc/del.png" style="position: absolute;left: 135px;top: 0px;width: 48px;height: 42px;" @click="onBtnClick('D')" />
+        </div>
+        <div style="position: absolute;top: 47px;width: 100%;height: 263px;background-color: black;" if="{{downFlag==='down'}}">
+          <div style="position: absolute;left: {{(screenWidth - 192)/2}}px;width: 192px;height: 263px;">
+            <list static class="list66">
+              <list-item type="waitingRows66" class="item66" for="{{itemArray in resultList2}}">
+                <div class="item column center" for="{{item in itemArray}}">
+                  <input class="calbtn0" type="button" value="{{item}}" @click="onRsSelect(item)" />
+                </div>
+              </list-item>
+            </list>
+            <img static style="position: absolute;top:196px;left:56px;width: 80px;height: 60px;" src="./assets/arc/up2.png" @click="onBtnClick('down')" />
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<style>
-</style>
-
 <script>
-import { SimpleInputMethod } from './assets/dicUtil.js'
+import vibrator from "@system.vibrator";
+import device from '@system.device'
+import { SimpleInputMethod } from "./assets/dicUtil.js";
+function doSearchDic(word, lang, cb) {
+  if (!word) {
+    cb([]);
+    return;
+  }
 
-let initializingInstances = new WeakMap()
+  const result = SimpleInputMethod.getHanzi(word, lang);
+  cb(Array.isArray(result) && result[0] ? result[0] : []);
+}
 
+function deleteLast(t) {
+  if (t) {
+    return t.substr(0, t.length - 1);
+  }
+  return "";
+}
 export default {
-  props: [
-    'canvasWidth',
-    'canvasHeight',
-    'lang',
-    'keyboardType',
-    'textColor'
-  ],
-  data() {
-    return {
-      _initialized: false,
-      k_board: null,
-      key_width_size: 0,
-      key_height_size: 0,
-      lastKey: 0,
-      shiftflag: false,
-      uppercase: false,
-      numberflag: false,
-      langNow: 'cn',
-      keyboardTypeNow: 'horizontal',
-      textColorNow: '#ffffff',
-      _inputValue: '',
-      _inputCode: '',
-      _inputHanziList: [],
-      _inputHanziIndex: 0,
-      _inputAll: [],
-      _cursorIndex: 0
-    }
+  props: {
+    hide: {
+      default: true,
+    },
+    keyboardtype: {
+      default: "QWERTY",
+    },
+    maxlength: {
+      default: 5,
+    },
+    vibratemode: {
+      default: "",
+    },
+    screentype: {
+      default: "circle",
+    },
+  },
+  data: {
+    cval: "",
+    resultList: [],
+    resultList2: [],
+    waitingList: [],
+    waitingIndex: -1,
+    lastWaitingStr: "",
+    downFlag: "",
+    lang: "cn",
+    numFlag: false,
+    numFlag_jp: false,
+    upperFlag: false,
+    cvalList: [0, 1, 2, 3, 4],
+    percent67: 52,
+    percent66: 0,
+    screenWidth: 336,
+    keys: {
+      full: [
+        ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+        ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+        ["Z", "X", "C", "V", "B", "N", "M"],
+      ],
+      sign: [
+        ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+        ["~", "!", "@", "#", "%", "\u201c", "\u201d", "*", "?", "/"],
+        ["(", ")", "-", "_", ":", ";", "\uff0c", "\u3002", "."],
+      ],
+      sign_jp: [
+        ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+        ["~", "\u2022", "@", "#", "%", "\u300c", "\u300d", "*", "?", "/"],
+        ["(", ")", "-", "\u2026", ":", ";", "\u3001", "\u3002", "!"],
+      ],
+      sign62: [
+        ["2", "3", "4", "5", "6", "7", "8", "9"],
+        ["!", "@", "#", "%", "\u201c", "\u201d", "*"],
+        [")", "-", "_", ":", ";"],
+      ],
+      sign62_jp: [
+        ["2", "3", "4", "5", "6", "7", "8", "9"],
+        ["\u2022", "@", "#", "%", "\u300c", "\u300d", "*"],
+        [")", "-", "\u2026", ":", ";"],
+      ],
+      full62: [
+        ["W", "E", "R", "T", "Y", "U", "I", "O"],
+        ["S", "D", "F", "G", "H", "J", "K"],
+        ["X", "C", "V", "B", "N"],
+      ],
+      t9: [
+        ["abc", "def"],
+        ["ghi", "jkl", "mno"],
+        ["pqrs", "tuv", "wxyz"],
+      ],
+    },
   },
   onInit() {
-    this.langNow = this.lang || 'cn'
-    this.keyboardTypeNow = this.keyboardType || 'horizontal'
-    this.textColorNow = this.textColor || '#ffffff'
-  },
-  onAppear() {
-    if (this._initialized) return
-    if (initializingInstances.has(this)) return
-    initializingInstances.set(this, true)
-    this._initialized = true
-    let that = this
-    SimpleInputMethod.initDict()
-    let canvas = this.$element('keyboardCanvas')
-    let ctx = canvas.getContext('2d')
-
-    let kb = createKeyboard(this)
-    this.k_board = kb
-    this.key_width_size = Math.floor(this.canvasWidth / kb.x_key)
-    this.key_height_size = Math.floor((this.canvasHeight - 8) / kb.y_key)
-
-    kb.ctx = ctx
-    kb.render()
-
-    canvas.on('click', function (ev) {
-      let key = kb.getKey(ev)
-      if (!key) return
-      that.onKeyPress(key)
-    })
-
-    canvas.on('longpress', function (ev) {
-      let key = kb.getKey(ev)
-      if (!key) return
-      that.onKeyLongPress(key)
-    })
-
-    canvas.on('swipe', function (ev) {
-      that.onDeleteSwipe()
-    })
-  },
-  onKeyPress(key) {
-    if (key === 'del') {
-      this.deleteOne()
-      return
-    }
-    if (key === 'shift') {
-      this.shiftflag = !this.shiftflag
-      this.uppercase = !this.uppercase
-      this.k_board.setShift(this.shiftflag)
-      return
-    }
-    if (key === '123') {
-      this.numberflag = !this.numberflag
-      this.k_board.setNumber(this.numberflag)
-      return
-    }
-    if (key === 'lang') {
-      this.langNow = this.langNow === 'cn' ? 'en' : 'cn'
-      this.k_board.setLang(this.langNow)
-      return
-    }
-    if (key === 'space') {
-      this.pushInput(' ')
-      return
-    }
-    if (key === 'back2') {
-      this.$emit('back')
-      return
-    }
-    if (key === 'search') {
-      this.$emit('search')
-      return
-    }
-    if (key === 'enter') {
-      this.$emit('enter')
-      return
-    }
-    if (key === 'tab') {
-      this.$emit('tab')
-      return
-    }
-    if (key === 'up') {
-      this.$emit('up')
-      return
-    }
-    if (key === 'down') {
-      this.$emit('down')
-      return
-    }
-    if (key === 'done') {
-      this.$emit('done', this._inputAll.join(''))
-      return
-    }
-
-    if (this.langNow === 'cn') {
-      if (key === 'del_all') {
-        this._inputValue = ''
-        this._inputCode = ''
-        this._inputHanziList = []
-        this._inputAll = []
-        this._cursorIndex = 0
-        this.updateDisplay()
-        return
+    if (this.maxlength) {
+      const tempCvalList = [];
+      for (let i = 0; i < this.maxlength; i++) {
+        tempCvalList.push(i);
       }
-      this.inputChinese(key)
+      this.cvalList = tempCvalList;
     }
-    else if (this.langNow === 'en') {
-      this.inputEnglish(key)
+    if (this.screentype === "rect" || this.screentype === "pill-shaped") {
+      this.adjustScreenWidth();
     }
-    else if (this.langNow === 'jp') {
-      this.inputJapanese(key)
-    }
+    this.$watch("hide", "watchHidePropsChange");
+    this.$watch("maxlength", "watchMaxLengthPropsChange");
+    this.$watch("keyboardtype", "watchKeyboardTypePropsChange");
   },
-  onKeyLongPress(key) {
-    if (key === 'del') {
-      this._inputValue = ''
-      this._inputCode = ''
-      this._inputHanziList = []
-      this._inputAll = []
-      this._cursorIndex = 0
-      this.updateDisplay()
-    }
+  addAllTxt(txt) {
+    this.$emit("complete", { content: txt });
   },
-  onDeleteSwipe() {
-    this._inputValue = ''
-    this._inputCode = ''
-    this._inputHanziList = []
-    this._inputAll = []
-    this._cursorIndex = 0
-    this.updateDisplay()
+  onRsSelect(txt) {
+    this.onVibrate();
+    this.cval = "";
+    this.addAllTxt(txt);
+    this.clearWaiting();
+    this.resetReslutList();
+    this.downFlag = "";
   },
-  inputChinese(key) {
-    if (key === 'del') return
-    this._inputCode += key
-    let result = SimpleInputMethod.getHanzi(this._inputCode, 'cn')
-    this._inputHanziList = result[0] || []
-    this._inputHanziIndex = 0
-    this._inputValue = this._inputHanziList[0] || this._inputCode
-    this.updateDisplay()
-  },
-  inputEnglish(key) {
-    if (this.shiftflag) {
-      key = key.toUpperCase()
-      this.shiftflag = false
-      this.k_board.setShift(false)
-    }
-    this.pushInput(key)
-  },
-  inputJapanese(key) {
-    this._inputCode += key
-    let result = SimpleInputMethod.getHanzi(this._inputCode, 'jp')
-    this._inputHanziList = result[0] || []
-    this._inputHanziIndex = 0
-    this._inputValue = this._inputHanziList[0] || this._inputCode
-    this.updateDisplay()
-  },
-  pushInput(str) {
-    this._inputAll.splice(this._cursorIndex, 0, str)
-    this._cursorIndex++
-    this._inputValue = ''
-    this._inputCode = ''
-    this._inputHanziList = []
-    this._inputHanziIndex = 0
-    this.updateDisplay()
-  },
-  deleteOne() {
-    if (this._inputCode.length > 0) {
-      this._inputCode = this._inputCode.slice(0, -1)
-      if (this._inputCode.length > 0) {
-        let result = SimpleInputMethod.getHanzi(this._inputCode, this.langNow)
-        this._inputHanziList = result[0] || []
-        this._inputHanziIndex = 0
-        this._inputValue = this._inputHanziList[0] || this._inputCode
-      }
-      else {
-        this._inputValue = ''
-        this._inputHanziList = []
-        this._inputHanziIndex = 0
-      }
-      this.updateDisplay()
-    }
-    else if (this._inputAll.length > 0 && this._cursorIndex > 0) {
-      this._cursorIndex--
-      this._inputAll.splice(this._cursorIndex, 1)
-      this.updateDisplay()
-    }
-  },
-  chooseHanzi(index) {
-    if (index < this._inputHanziList.length) {
-      this.pushInput(this._inputHanziList[index])
-    }
-    else {
-      this.pushInput(this._inputCode)
-    }
-  },
-  moveCursorLeft() {
-    if (this._cursorIndex > 0) {
-      this._cursorIndex--
-      this.updateDisplay()
-    }
-  },
-  moveCursorRight() {
-    if (this._cursorIndex < this._inputAll.length) {
-      this._cursorIndex++
-      this.updateDisplay()
-    }
-  },
-  updateDisplay() {
-    let text = this._inputAll.join('')
-    let composing = this._inputValue || ''
-    this.$emit('input', {
-      text: text,
-      composing: composing,
-      cursorIndex: this._cursorIndex,
-      hanziList: this._inputHanziList,
-      hanziIndex: this._inputHanziIndex
-    })
-  },
-  clear() {
-    this._inputValue = ''
-    this._inputCode = ''
-    this._inputHanziList = []
-    this._inputAll = []
-    this._cursorIndex = 0
-    this.updateDisplay()
-  },
-  getText() {
-    return this._inputAll.join('')
-  },
-  setText(text) {
-    this._inputAll = text ? text.split('') : []
-    this._cursorIndex = this._inputAll.length
-    this._inputValue = ''
-    this._inputCode = ''
-    this._inputHanziList = []
-    this.updateDisplay()
-  }
-}
-
-function createKeyboard(component) {
-  let that = component
-  let imageBase = 'InputMethod/assets/'
-  let imageType = 'horizontal'
-
-  let langAssets = {
-    'cn': { text: '中/英', asset: 'cn.png' },
-    'en': { text: '中/英', asset: 'en.png' },
-    'jp': { text: 'あ/a', asset: 'jp.png' }
-  }
-
-  function Keyboard() {
-    this.ctx = null
-    this.x_key = 10
-    this.y_key = 4
-    this.button = []
-    this.shift = false
-    this.isNumber = false
-    this.lang = 'cn'
-  }
-
-  Keyboard.prototype.setShift = function (v) {
-    this.shift = v
-    this.render()
-  }
-
-  Keyboard.prototype.setNumber = function (v) {
-    this.isNumber = v
-    this.render()
-  }
-
-  Keyboard.prototype.setLang = function (v) {
-    this.lang = v
-    this.render()
-  }
-
-  Keyboard.prototype.getKey = function (ev) {
-    let x = that.key_width_size
-    let y = that.key_height_size
-    for (let i = 0; i < this.button.length; i++) {
-      let b = this.button[i]
-      if (ev.x >= b.x && ev.x <= b.x + b.w &&
-          ev.y >= b.y && ev.y <= b.y + b.h) {
-        return b
-      }
-    }
-    return null
-  }
-
-  Keyboard.prototype.render = function () {
-    let ctx = this.ctx
-    let w = that.canvasWidth
-    let h = that.canvasHeight
-    let x = that.key_width_size
-    let y = that.key_height_size
-
-    ctx.clearRect(0, 0, w, h)
-
-    let keys = this.getKeys()
-    this.button = []
-
-    for (let i = 0; i < keys.length; i++) {
-      let row = keys[i]
-      let rowY = i * y + 4
-      let totalWidth = row.reduce((s, k) => s + (k.w || 1), 0)
-      let offsetX = (w - totalWidth * x) / 2
-
-      let col = 0
-      for (let j = 0; j < row.length; j++) {
-        let key = row[j]
-        let kw = (key.w || 1) * x
-        let kh = y - 4
-        let kx = offsetX + col * x
-        let ky = rowY
-
-        this.button.push({
-          key: key.k,
-          x: kx,
-          y: ky,
-          w: kw,
-          h: kh
-        })
-
-        this.drawKey(ctx, kx, ky, kw, kh, key)
-        col += key.w || 1
-      }
-    }
-  }
-
-  Keyboard.prototype.drawKey = function (ctx, x, y, w, h, key) {
-    let radius = 6
-    ctx.beginPath()
-    ctx.moveTo(x + radius, y)
-    ctx.lineTo(x + w - radius, y)
-    ctx.arcTo(x + w, y, x + w, y + radius, radius)
-    ctx.lineTo(x + w, y + h - radius)
-    ctx.arcTo(x + w, y + h, x + w - radius, y + h, radius)
-    ctx.lineTo(x + radius, y + h)
-    ctx.arcTo(x, y + h, x, y + h - radius, radius)
-    ctx.lineTo(x, y + radius)
-    ctx.arcTo(x, y, x + radius, y, radius)
-    ctx.closePath()
-
-    let fillColor = key.c || '#4a4a4a'
-    ctx.fillStyle = fillColor
-    ctx.fill()
-
-    if (key.i) {
-      try {
-        let imgObj = that.$asset(`${imageBase}${imageType}/${key.i}`)
-        if (imgObj) {
-          ctx.drawImage(imgObj, x + (w - 24) / 2, y + (h - 24) / 2, 24, 24)
+  onBtnClick(sign) {
+    this.onVibrate();
+    switch (sign) {
+      case "AC":
+        this.cval = "";
+        this.clearWaiting();
+        this.resetReslutList();
+        break;
+      case "lang":
+        if (this.keyboardtype === "T9") {
+          this.lang = this.lang === "cn" ? "en" : "cn";
+        } else {
+          if (this.lang === "cn") {
+            this.lang = "en";
+          } else if (this.lang === "en") {
+            this.lang = "jp";
+          } else {
+            this.lang = "cn";
+          }
         }
-      }
-      catch (e) {
-        if (key.t) {
-          ctx.fillStyle = that.textColorNow
-          ctx.font = '16px sans-serif'
-          ctx.textAlign = 'center'
-          ctx.textBaseline = 'middle'
-          ctx.fillText(key.t, x + w / 2, y + h / 2)
+        this.cval = "";
+        this.clearWaiting();
+        this.resetReslutList();
+        break;
+      case "D":
+        if (this.waitingIndex >= 0) {
+          this.clearWaiting();
+          this.resetReslutList();
+        } else if (this.cval.length > 0) {
+          this.cval = deleteLast(this.cval);
+          this.resetReslutList();
+        } else {
+          this.$emit("delete", {});
         }
+        break;
+      case "space":
+        this.addAllTxt(" ");
+        break;
+      case "down":
+        this.downFlag = this.downFlag === "down" ? "" : "down";
+        break;
+      case "select":
+        if (this.lastWaitingStr != sign && this.lastWaitingStr) {
+          if (this.lang === "cn" || this.lang === 'jp') {
+            this.cval += this.waitingList[this.waitingIndex];
+          } else {
+            if (this.upperFlag) {
+              this.addAllTxt(this.waitingList[this.waitingIndex].toUpperCase());
+            } else {
+              this.addAllTxt(this.waitingList[this.waitingIndex].toLowerCase());
+            }
+          }
+          this.clearWaiting();
+          this.resetReslutList();
+        }
+        break;
+      case "switchNum":
+        this.numFlag = true;
+        this.numFlag_jp = false;
+        this.cval = "";
+        this.clearWaiting();
+        this.resetReslutList();
+        break;
+      case "switchNum_jp":
+        this.numFlag = true;
+        this.numFlag_jp = true;
+        this.cval = "";
+        this.clearWaiting();
+        this.resetReslutList();
+        break;
+      case "switchCn":
+        this.numFlag = false;
+        this.numFlag_jp = false;
+        break;
+      case "switchUpper":
+        this.upperFlag = true;
+        break;
+      case "switchLow":
+        this.upperFlag = false;
+        break;
+      default:
+        if (sign.length === 1) {
+          this.addAllTxt(sign);
+        } else {
+          if (this.waitingIndex >= 0) {
+            if (this.lastWaitingStr === sign) {
+              this.waitingIndex++;
+              if (this.waitingIndex >= this.lastWaitingStr.length) {
+                this.waitingIndex = 0;
+              }
+            } else {
+              if (this.lang === "cn" || this.lang === 'jp') {
+                this.cval += this.waitingList[this.waitingIndex];
+              } else {
+                if (this.upperFlag) {
+                  this.addAllTxt(
+                    this.waitingList[this.waitingIndex].toUpperCase(),
+                  );
+                } else {
+                  this.addAllTxt(
+                    this.waitingList[this.waitingIndex].toLowerCase(),
+                  );
+                }
+              }
+              this.lastWaitingStr = sign;
+              this.waitingIndex = 0;
+              this.waitingList = sign.split("");
+            }
+          } else {
+            this.lastWaitingStr = sign;
+            this.waitingIndex = 0;
+            this.waitingList = sign.split("");
+          }
+          this.resetReslutList();
+        }
+        break;
+    }
+  },
+  clearWaiting() {
+    this.waitingList = [];
+    this.waitingIndex = -1;
+    this.lastWaitingStr = "";
+  },
+  resetReslutList() {
+    let watingStr = "";
+    if (this.lastWaitingStr && this.lastWaitingStr[this.waitingIndex]) {
+      watingStr = this.lastWaitingStr[this.waitingIndex];
+    }
+    if (!(this.cval + watingStr) || (this.lang !== "cn" && this.lang !== "jp")) {
+      this.resultList = [];
+      this.setResultListAll();
+      return;
+    }
+    this.getResultByWord(this.cval + watingStr);
+  },
+  setResultListAll() {
+    this.resultList2 = [];
+    let array = [];
+    for (let i = 0; i < this.resultList.length; i++) {
+      array.push(this.resultList[i]);
+      if (array.length === parseInt(this.maxlength)) {
+        this.resultList2.push(array);
+        array = [];
       }
     }
-    else if (key.t) {
-      ctx.fillStyle = that.textColorNow
-      ctx.font = '18px sans-serif'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText(key.t, x + w / 2, y + h / 2)
+    if (array.length > 0 && array.length < parseInt(this.maxlength)) {
+      this.resultList2.push(array);
     }
-
-    ctx.fillStyle = '#ffffff'
-    ctx.font = '12px sans-serif'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'top'
-  }
-
-  Keyboard.prototype.getKeys = function () {
-    let lang = this.lang
-    let isNum = this.isNumber
-    let shift = this.shift
-
-    let cnLetters = 'q w e r t y u i o p'.split(' ')
-    let cnLetters2 = 'a s d f g h j k l'.split(' ')
-    let cnLetters3 = 'z x c v b n m'.split(' ')
-    let enLetters = shift
-      ? 'Q W E R T Y U I O P'.split(' ')
-      : 'q w e r t y u i o p'.split(' ')
-    let enLetters2 = shift
-      ? 'A S D F G H J K L'.split(' ')
-      : 'a s d f g h j k l'.split(' ')
-    let enLetters3 = shift
-      ? 'Z X C V B N M'.split(' ')
-      : 'z x c v b n m'.split(' ')
-
-    let letters = lang === 'cn' ? cnLetters : enLetters
-    let letters2 = lang === 'cn' ? cnLetters2 : enLetters2
-    let letters3 = lang === 'cn' ? cnLetters3 : enLetters3
-
-    let langAsset = langAssets[lang] || langAssets['cn']
-
-    let numberRow1 = '1 2 3 4 5 6 7 8 9 0'.split(' ')
-    let numberRow2 = '- / : ; ( ) ¥ & @ "'.split(' ')
-    let numberRow3 = '.,?!\'\u0060~'.split(' ')
-
-    if (isNum) {
-      return [
-        numberRow1.map(k => ({ k, t: k })),
-        numberRow2.map(k => ({ k, t: k })),
-        [
-          { k: 'lang', t: langAsset.text, w: 1.5 },
-          ...numberRow3.map(k => ({ k, t: k })),
-          { k: 'del', i: 'del.png', w: 1.5 }
-        ],
-        [
-          { k: '123', t: 'ABC', w: 2 },
-          { k: 'space', i: 'space.png', w: 4 },
-          { k: 'back2', t: '\u23CE', w: 2 }
-        ]
-      ]
+  },
+  getResultByWord(val) {
+    const that = this;
+    doSearchDic(val, that.lang, function (data) {
+      that.resultList = data;
+      that.setResultListAll();
+    });
+  },
+  onSelect(num) {
+    this.$emit("keyDown", { content: num });
+    if (this.keyboardtype === "T9" && this.screentype !== "pill-shaped") {
+      this.onBtnClick(num);
+      return;
     }
-
-    return [
-      letters.map(k => ({ k, t: k })),
-      letters2.map(k => ({ k, t: k })),
-      [
-        { k: 'lang', t: langAsset.text, w: 1.5 },
-        ...letters3.map(k => ({ k, t: k })),
-        { k: 'del', i: 'del.png', w: 1.5 }
-      ],
-      [
-        { k: '123', t: '123', w: 2 },
-        { k: 'space', i: 'space.png', w: 4 },
-        { k: 'back2', t: '\u23CE', w: 2 }
-      ]
-    ]
+    this.onVibrate();
+    if ((this.lang === 'cn' || this.lang === 'jp')  && !this.numFlag) {
+      this.cval += num.toLowerCase();
+    } else if (this.lang === "en" && !this.numFlag) {
+      if (this.upperFlag) {
+        this.addAllTxt(num.toUpperCase());
+      } else {
+        this.addAllTxt(num.toLowerCase());
+      }
+    } else {
+      this.addAllTxt(num);
+    }
+    this.resetReslutList();
+  },
+  onSelectWaiting(num) {
+    this.onVibrate();
+    if (this.lang === "cn") {
+      this.cval += this.waitingList[num].toString();
+    } else {
+      if (this.upperFlag) {
+        this.addAllTxt(this.waitingList[num].toUpperCase());
+      } else {
+        this.addAllTxt(this.waitingList[num].toLowerCase());
+      }
+    }
+    this.clearWaiting();
+    this.resetReslutList();
+  },
+  watchHidePropsChange(newV, oldV) {
+    this.$emit("visibilityChange", { visible: newV });
+  },
+  watchMaxLengthPropsChange(newV, oldV) {
+    if (newV) {
+      const tempCvalList = [];
+      for (let i = 0; i < newV; i++) {
+        tempCvalList.push(i);
+      }
+      this.cvalList = tempCvalList;
+    }
+  },
+  watchKeyboardTypePropsChange(newV, oldV) {
+    if (newV === "T9" && this.lang === "jp") {
+      this.lang = "cn";
+      this.cval = "";
+      this.clearWaiting();
+      this.resetReslutList();
+    }
+  },
+  onVibrate() {
+    if (this.vibratemode != "") {
+      vibrator.vibrate({ mode: this.vibratemode });
+    }
+  },
+  handelScroll(event) {
+    let percentTemp67 = (event.scrollX / 636) * 100 + 52.8;
+    this.percent67 = parseInt(percentTemp67 <= 100 ? percentTemp67 : 100);
+    let percentTemp66 = (event.scrollX / 633) * 100;
+    this.percent66 = parseInt(percentTemp66 <= 100 ? percentTemp66 : 100);
+  },
+  pushCval() {
+    this.onVibrate();
+    let temp = this.cval;
+    this.cval = "";
+    this.clearWaiting();
+    this.resetReslutList();
+    this.addAllTxt(temp);
+  },
+  adjustScreenWidth(){
+    device.getInfo({
+      success: (data) => {
+        this.screenWidth = data.screenWidth;
+      }
+    })
   }
-
-  return new Keyboard()
-}
+};
 </script>
+
+<style>
+.page {
+  width:100%;
+  position:absolute;
+  left:0;
+  bottom:0
+}
+.item {
+  height:52px;
+  flex:1
+}
+.calbtn0 {
+  color:#fff;
+  font-size:28px;
+  background-color:rgba(38,38,38,0);
+  border-radius:0;
+  height:52px;
+  width:52px;
+  text-align:center
+}
+.calbtn02 {
+  color:rgb(255,255,255);
+  background-color:rgba(38,38,38,0);
+  border-radius:0px;
+  font-size:32px;
+  text-align:center;
+  height:42px;
+}
+.calbtnfull {
+  color:#fff;
+  font-size:24px;
+  font-weight:bold;
+  background-color:#262626;
+  border-radius:12px;
+  margin-right:4px;
+  height:52px;
+  width:40px;
+  text-align:center;
+  border:3px solid rgba(255,255,255,0.06)
+}
+.calbtnt9 {
+  color:#fff;
+  font-size:25px;
+  font-weight:bold;
+  background-color:#262626;
+  border-radius:999px;
+  margin-right:4px;
+  width:94px;
+  height:60px;
+  text-align:center;
+  border:3px solid rgba(255,255,255,0.06)
+}
+.caltext {
+  text-align:left;
+  line-height:38px;
+  lines:1;
+  text-overflow:ellipsis;
+  color:#0d84ff;
+  height:45px;
+  font-size:28px;
+  text-align:left;
+  font-weight:bold;
+  padding-left:8px
+}
+.list3 {
+  position:absolute;
+  top:38px;
+  left:78px;
+  width:324px;
+  height:160px;
+  flex-direction:column;
+  background-color:#262626;
+  border-radius:12px
+}
+.item3 {
+  width:324px;
+  height:52px
+}
+.calbtn67 {
+  color:rgb(255,255,255);
+  font-size:32px;
+  font-weight:bold;
+  background-color:rgb(38,38,38);
+  margin-right:4px;
+  width:60px;
+  height:60px;
+  border-radius:30px;
+  text-align:center;
+  border:3px solid rgba(255,255,255,0.06);
+}
+#keyboard67 {
+  position:absolute;
+  left:0px;
+  top:82px;
+  width:100%;
+  height:170px;
+}
+#keyboard66 {
+  position:absolute;
+  left:0px;
+  top:82px;
+  width:100%;
+  height:170px;
+}
+.list67 {
+  top:0px;
+  width:96.4%;
+  height:170px;
+  border-radius:30px;
+  background-color:#262626;
+  border:3px solid rgba(255,255,255,0.06);
+  padding:0px 10px;
+}
+.item67 {
+  height:50px;
+}
+.calbtn66 {
+  color:rgb(255,255,255);
+  font-size:32px;
+  font-weight:bold;
+  background-color:rgb(38,38,38);
+  margin-right:3px;
+  width:60px;
+  height:60px;
+  border-radius:30px;
+  text-align:center;
+  border:3px solid rgba(255,255,255,0.06);
+}
+.list66 {
+  position:absolute;
+  left:3px;
+  top:0px;
+  width:186px;
+  height:186px;
+  border-radius:30px;
+  background-color:#262626;
+  border:3px solid rgba(255,255,255,0.06);
+  padding:10px
+}
+.item66 {
+  height:42px;
+}
+.waiting-keys {
+  width:36px;
+  height:40px;
+  text-align: center;
+}
+
+.keyboard-rows-rect-t9 {
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-shrink: 0;
+  height: 55px;
+  width: 100%;
+}
+
+.calbtnt9-rect {
+  flex:1;
+  height:55px;
+  margin:0 3px;
+  width:unset;
+}
+
+@media (min-width: 230) and (max-width: 235) and (shape: circle) {
+  #full-keyboard {
+    transform:scale(0.96);
+    transform-origin:0 321px;
+    overflow:visible;
+  }
+}
+</style>

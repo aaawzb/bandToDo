@@ -1,154 +1,125 @@
 <template>
-  <div class="page">
-    <div class="header">
-      <image class="back-btn" src="/common/back_rect.png" onclick="goBack"></image>
-      <text class="header-title">选择日期</text>
-    </div>
+  <div class="container">
+    <text class="time">{{ time }}</text>
+    <text class="title" if="{{ global.screenShape == 'rect' }}">选择日期</text>
+    <img
+      if="{{ global.screenShape == 'rect' }}"
+      class="top leftButton"
+      src="/common/back_rect.png"
+      @click="goBack"
+    />
+    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
+      <span class="iconfont">&#xe685;</span>
+      <span>选择日期</span>
+    </text>
+    <img else class="top" src="/common/back.png" @click="goBack" />
+    <img
+      if="{{ global.screenShape == 'rect' }}"
+      class="top rightButton"
+      src="/common/check_rect.png"
+      @click="saveDate"
+    />
+    <img else class="bottom" src="/common/check.png" @click="saveDate" />
 
-    <div class="date-panel">
-      <div class="month-nav">
-        <text class="nav-btn" onclick="prevMonth">‹</text>
-        <text class="month-label">{{year}}年{{month}}月</text>
-        <text class="nav-btn" onclick="nextMonth">›</text>
+    <div class="date-picker-container">
+      <picker class="date-picker year" type="text" range="{{yearRange}}" selected="{{yearIndex}}" @change="onYearChange" />
+      <div class="wrapper">
+        <picker class="date-picker" type="text" range="{{monthRange}}" selected="{{currentMonth - 1 + 12}}" @change="onMonthChange" />
+        <picker class="date-picker" type="text" range="{{dayRange}}" selected="{{selectedDay - 1 + dayRange.length / 3}}" @change="onDayChange" />
       </div>
-
-      <div class="weekday-row">
-        <text class="weekday" for="{{weekdays}}">{{$item}}</text>
-      </div>
-
-      <div class="days-grid">
-        <div class="day-cell" for="{{days}}" onclick="selectDay($item)">
-          <text class="day-text" style="color: {{getDayColor($item)}};">{{$item.day}}</text>
-          <div class="day-bg" if="{{$item.selected}}"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="today-bar">
-      <text class="today-btn" onclick="selectToday">回到今天</text>
     </div>
   </div>
 </template>
 
 <style>
-  @import '../../common/app.css';
+  @import "../../common/app.css";
 
-  .page {
+  .container {
     flex-direction: column;
-    width: 100%;
-    height: 100%;
-    background-color: #000000;
-  }
-
-  .header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    flex-direction: row;
-    align-items: center;
-    padding: 0 12px;
-    background-color: #000000;
-  }
-
-  .back-btn {
-    width: 28px;
-    height: 28px;
-  }
-
-  .header-title {
-    flex: 1;
-    text-align: center;
-    font-size: 22px;
-    color: #ffffff;
-  }
-
-  .date-panel {
-    position: absolute;
-    top: 60px;
-    left: 16px;
-    right: 16px;
-    bottom: 60px;
-    background-color: #1a1a1a;
-    border-radius: 16px;
-    padding: 16px;
-    flex-direction: column;
-  }
-
-  .month-nav {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
-  .nav-btn {
-    font-size: 28px;
-    color: #ff6a24;
-    padding: 8px 16px;
-  }
-
-  .month-label {
-    font-size: 22px;
-    color: #ffffff;
-    font-weight: bold;
-  }
-
-  .weekday-row {
-    flex-direction: row;
-    justify-content: space-around;
-    margin-bottom: 8px;
-  }
-
-  .weekday {
-    font-size: 16px;
-    color: #6f6f6f;
-    width: 38px;
-    text-align: center;
-  }
-
-  .days-grid {
-    flex-direction: row;
-    flex-wrap: wrap;
     justify-content: flex-start;
+    align-items: center;
+    background-color: black;
   }
 
-  .day-cell {
-    width: 38px;
-    height: 36px;
+  .date-picker-container {
+    margin-top: 20px;
+    width: 100%;
+    flex: 1;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 2px;
   }
 
-  .day-text {
-    font-size: 18px;
-  }
-
-  .day-bg {
-    position: absolute;
-    width: 32px;
-    height: 32px;
-    border-radius: 16px;
-    background-color: #ff6a24;
-    opacity: 0.3;
-  }
-
-  .today-bar {
-    position: absolute;
-    bottom: 16px;
-    left: 0;
-    right: 0;
+  .wrapper {
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
   }
 
-  .today-btn {
-    font-size: 18px;
-    color: #ff6a24;
-    padding: 8px 24px;
-    background-color: #1a1a1a;
-    border-radius: 16px;
+  .date-picker {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.2);
+    selected-color: #fff;
+    selected-font-size: 42px;
+  }
+
+  @media (device-type: watch) and (shape: circle) {
+    .date-picker-container {
+      flex-direction: row;
+      width: 90%;
+      height: 100%;
+      margin-top: 10px;
+    }
+
+    .date-picker {
+      height: 100%;
+      font-size: 36px;
+      selected-font-size: 56px;
+    }
+
+    .year {
+      width: 75%;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      flex-direction: row;
+    }
+  }
+
+  @media (device-type: band) and (shape: rect) {
+    .date-picker-container {
+      margin-top: 108px;
+    }
+
+    .date-picker {
+      font-size: 36px;
+      selected-font-size: 56px;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      flex-direction: row;
+    }
+  }
+
+  @media (device-type: watch) and (shape: rect) {
+    .date-picker-container {
+      margin-top: 124px;
+    }
+
+    .date-picker {
+      font-size: 36px;
+      selected-font-size: 64px;
+    }
+
+    .wrapper {
+      width: 100%;
+      height: 100%;
+      flex-direction: row;
+    }
   }
 </style>
 
@@ -156,87 +127,81 @@
   import router from '@system.router'
 
   export default {
-    data() {
-      return {
-        year: 2026,
-        month: 7,
-        selectedDay: 0,
-        weekdays: ['日', '一', '二', '三', '四', '五', '六'],
-        days: []
-      }
+    private: {
+      time: '',
+      currentYear: 2026,
+      currentMonth: 7,
+      selectedYear: 2026,
+      selectedMonth: 7,
+      selectedDay: 1,
+      yearRange: [],
+      monthRange: [],
+      dayRange: [],
+      originalMonthRange: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+      yearIndex: 0
     },
     onInit() {
       let now = new Date()
-      this.year = now.getFullYear()
-      this.month = now.getMonth() + 1
-      this.selectedDay = now.getDate()
-      this.buildDays()
-    },
-    buildDays() {
-      let firstDay = new Date(this.year, this.month - 1, 1).getDay()
-      let daysInMonth = new Date(this.year, this.month, 0).getDate()
-      let days = []
+      let currentYear = now.getFullYear()
+      let years = []
+      for (let i = currentYear - 50; i <= currentYear + 50; i++) {
+        years.push(String(i))
+      }
+      this.yearRange = years
 
-      for (let i = 0; i < firstDay; i++) {
-        days.push({ day: '', selected: false, disabled: true })
+      let initDate = global.returnedDate || ''
+      if (!initDate) {
+        initDate = currentYear + '-' + (now.getMonth() + 1) + '-' + now.getDate()
       }
 
-      for (let d = 1; d <= daysInMonth; d++) {
-        days.push({
-          day: d,
-          selected: d === this.selectedDay,
-          disabled: false,
-          isToday: this.isToday(d)
-        })
+      let parts = initDate.split('-').map(Number)
+      this.currentYear = parts[0] || currentYear
+      this.currentMonth = parts[1] || (now.getMonth() + 1)
+      this.selectedYear = this.currentYear
+      this.selectedMonth = this.currentMonth
+      this.selectedDay = parts[2] || now.getDate()
+
+      this.yearIndex = this.yearRange.indexOf(String(this.currentYear))
+      if (this.yearIndex === -1) this.yearIndex = 50
+
+      this.monthRange = this.originalMonthRange.concat(this.originalMonthRange).concat(this.originalMonthRange)
+      this.updateDayRange()
+    },
+    updateDayRange() {
+      let daysInMonth = new Date(this.currentYear, this.currentMonth, 0).getDate()
+      let originalDays = []
+      for (let i = 1; i <= daysInMonth; i++) {
+        originalDays.push(String(i))
       }
+      this.dayRange = originalDays.concat(originalDays).concat(originalDays)
 
-      this.days = days
+      if (this.selectedDay > daysInMonth) {
+        this.selectedDay = daysInMonth
+      }
     },
-    isToday(day) {
-      let now = new Date()
-      return now.getFullYear() === this.year &&
-             now.getMonth() + 1 === this.month &&
-             now.getDate() === day
+    onShow() {
+      this.time = global.getTime ? global.getTime() : ''
     },
-    getDayColor(item) {
-      if (item.disabled) return '#3a3a3a'
-      if (item.selected) return '#ff6a24'
-      if (item.isToday) return '#ffffff'
-      return '#aaaaaa'
+    onYearChange(e) {
+      this.currentYear = parseInt(this.yearRange[e.newSelected])
+      this.yearIndex = e.newSelected
+      this.updateDayRange()
     },
-    prevMonth() {
-      this.month--
-      if (this.month < 1) { this.month = 12; this.year-- }
-      this.selectedDay = 0
-      this.buildDays()
+    onMonthChange(e) {
+      this.currentMonth = (e.newSelected % 12) + 1
+      this.updateDayRange()
     },
-    nextMonth() {
-      this.month++
-      if (this.month > 12) { this.month = 1; this.year++ }
-      this.selectedDay = 0
-      this.buildDays()
+    onDayChange(e) {
+      let daysInMonth = new Date(this.currentYear, this.currentMonth, 0).getDate()
+      this.selectedDay = (e.newSelected % daysInMonth) + 1
+      this.updateDayRange()
     },
-    selectDay(item) {
-      if (!item || !item.day) return
-      let day = item.day
-      this.selectedDay = day
-      this.buildDays()
-
-      let dateStr = this.year + '-' +
-        String(this.month).padStart(2, '0') + '-' +
-        String(day).padStart(2, '0')
-
-      if (!this.$app.$data) this.$app.$data = {}
-      this.$app.$data.returnedDate = dateStr
+    saveDate() {
+      let m = this.currentMonth < 10 ? '0' + this.currentMonth : String(this.currentMonth)
+      let d = this.selectedDay < 10 ? '0' + this.selectedDay : String(this.selectedDay)
+      let dateStr = this.currentYear + '-' + m + '-' + d
+      global.returnedDate = dateStr
       router.back()
-    },
-    selectToday() {
-      let now = new Date()
-      this.year = now.getFullYear()
-      this.month = now.getMonth() + 1
-      this.selectedDay = now.getDate()
-      this.buildDays()
-      this.selectDay({ day: this.selectedDay })
     },
     goBack() {
       router.back()

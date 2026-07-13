@@ -12,19 +12,42 @@
       const that = this
       device.getInfo({
         success: function (ret) {
-          that.$def("screenShape", ret.screenShape || "rect")
-          that.$def("deviceType", ret.deviceType || "band")
-          that.$def("screenWidth", ret.screenWidth || 336)
-          that.$def("screenHeight", ret.screenHeight || 480)
+          global.screenShape = ret.screenShape || "rect"
+          global.deviceType = ret.deviceType || "band"
+          global.screenWidth = ret.screenWidth || 336
+          global.screenHeight = ret.screenHeight || 480
+          global.screenSize = {
+            width: ret.screenWidth || 336,
+            height: ret.screenHeight || 480
+          }
+          global.isPillShaped = ret.screenShape === "pill-shaped"
         }
       })
+    },
+    onShow() {
+      global.getTime = function () {
+        let now = new Date()
+        let h = now.getHours()
+        let m = now.getMinutes()
+        return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m
+      }
+
+      global.dateDiff = function (dateStr) {
+        let target = new Date(dateStr)
+        let now = new Date()
+        now.setHours(0, 0, 0, 0)
+        target.setHours(0, 0, 0, 0)
+        return Math.floor((now - target) / 86400000)
+      }
+
+      global.returnedDate = ''
     }
   }
 </script>
 
 <style>
   .title {
-    font-size: 48px;
+    font-size: 32px;
     color: white;
   }
 </style>

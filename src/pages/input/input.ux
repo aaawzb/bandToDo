@@ -29,7 +29,7 @@
           style="width: 100%; height: 100%"
           scroll-x="true"
         >
-          <text class="input-text">
+          <text class="input-text" style="color: {{inputTextColor}};">
             {{textValue || '点击输入内容'}}
           </text>
         </scroll>
@@ -49,12 +49,13 @@
       <div class="picker-overlay" onclick="hidePriorityPicker"></div>
       <div class="picker-panel">
         <text class="picker-title">优先级</text>
-        <div class="picker-options">
-          <div class="picker-option" for="{{priorities}}" onclick="selectPriority($item.value)">
+<div class="picker-options">
+          <div class="picker-option {{ $idx === priorities.length - 1 ? 'picker-option-last' : '' }}" for="{{priorities}}" onclick="selectPriority($item.value)">
             <div class="prio-dot" style="background-color: {{$item.color}};"></div>
             <text class="prio-label">{{$item.label}}</text>
-            <img class="prio-check" if="{{$item.value === selectedPriority}}" src="/common/check.png" />
+            <img class="prio-check" if="{{$item.value === selectedPriority}}" src="/common/check_rect.png" />
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -66,8 +67,8 @@
       maxlength="100"
       vibratemode="short"
       screentype="{{screentype}}"
-      @visibility-change="onVisibilityChange"
-      @key-down="onKeyDown"
+      @visibilitychange="onVisibilityChange"
+      @keydown="onKeyDown"
       @delete="onDelete"
       @complete="onComplete"
     ></input-method>
@@ -109,7 +110,7 @@
     text-overflow: ellipsis;
   }
 
-  .input-text:empty::placeholder {
+  .placeholder-text {
     color: #6f6f6f;
   }
 
@@ -196,7 +197,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .picker-option:last-child {
+  .picker-option-last {
     border-bottom: none;
   }
 
@@ -344,6 +345,9 @@
           return (parts[1] || '') + '/' + (parts[2] || '')
         }
         return '日期'
+      },
+      inputTextColor() {
+        return this.textValue ? 'white' : '#6f6f6f'
       }
     },
     onInit() {

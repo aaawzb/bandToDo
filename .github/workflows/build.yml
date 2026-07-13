@@ -24,6 +24,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Sign RPK
+        if: env.CERT_PEM != '' && env.KEY_PEM != ''
+        run: |
+          echo "$CERT_PEM" > certificate.pem
+          echo "$KEY_PEM" > private.pem
+          npx aiot resign --cert certificate.pem --key private.pem dist/*.rpk
+        env:
+          CERT_PEM: ${{ secrets.CERT_PEM }}
+          KEY_PEM: ${{ secrets.KEY_PEM }}
+
       - name: Upload RPK
         uses: actions/upload-artifact@v4
         with:

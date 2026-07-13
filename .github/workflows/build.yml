@@ -24,9 +24,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Package RPK
-        run: npx aiot resign
-
       - name: Upload RPK
         uses: actions/upload-artifact@v4
         with:

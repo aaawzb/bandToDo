@@ -8,7 +8,7 @@
       src="/common/back_rect.png"
       @click="goBack"
     />
-    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
+    <text @click="goBack" class="title" elif="{{ global.screenShape === 'circle' || global.screenShape === 'pill-shaped' }}">
       <img class="icon-back" src="/common/back.png" />
       <span>选择日期</span>
     </text>
@@ -137,8 +137,6 @@
       time: '',
       currentYear: 2026,
       currentMonth: 7,
-      selectedYear: 2026,
-      selectedMonth: 7,
       selectedDay: 1,
       yearRange: [],
       monthRange: [],
@@ -163,8 +161,6 @@
       let parts = initDate.split('-').map(Number)
       this.currentYear = parts[0] || currentYear
       this.currentMonth = parts[1] || (now.getMonth() + 1)
-      this.selectedYear = this.currentYear
-      this.selectedMonth = this.currentMonth
       this.selectedDay = parts[2] || now.getDate()
 
       this.yearIndex = this.yearRange.indexOf(String(this.currentYear))

@@ -38,17 +38,7 @@
         return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m
       }
 
-      global.dateDiff = function (dateStr) {
-        let target = new Date(dateStr)
-        let now = new Date()
-        now.setHours(0, 0, 0, 0)
-        target.setHours(0, 0, 0, 0)
-        return Math.floor((now - target) / 86400000)
-      }
     },
-    onShow() {
-      global.returnedDate = ''
-    }
   }
 </script>
 

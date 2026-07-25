@@ -8,7 +8,7 @@
       src="/common/back_rect.png"
       @click="goBack"
     />
-    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
+    <text @click="goBack" class="title" elif="{{ global.screenShape === 'circle' || global.screenShape === 'pill-shaped' }}">
       <img class="icon-back" src="/common/back.png" />
       <span>新建待办</span>
     </text>
@@ -24,8 +24,8 @@
 
     <div class="padding"></div>
     <div class="line">
-      <div class="input-line" @click="changeKbState">
-        <text class="input-text" style="color: {{inputTextColor}};">
+      <div class="input-line">
+        <text class="input-text" @click="changeKbState" style="color: {{inputTextColor}};">
           {{textValue || '点击输入内容'}}
         </text>
       </div>
@@ -48,7 +48,13 @@
           <text class="picker-title">优先级</text>
           <text class="picker-confirm" onclick="confirmPriority">确定</text>
         </div>
-        <picker class="priority-wheel" type="text" range="{{priorityOptions}}" selected="{{priorityIndex}}" @change="onPriorityChange"></picker>
+        <div class="priority-list">
+          <div class="priority-option" for="{{priorityOptions}}" onclick="selectPriority($idx)">
+            <div class="priority-dot" style="background-color: {{getPriorityColor($item)}};"></div>
+            <text class="priority-name" style="color: {{getPriorityColor($item)}};">{{$item}}</text>
+            <img class="priority-check" if="{{priorityIndex === $idx}}" src="/common/check.png" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -71,10 +77,12 @@
   @import '../../common/app.css';
 
   .container {
+    position: relative;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     background-color: #000000;
+    height: 100%;
   }
 
   .line {
@@ -192,6 +200,37 @@
     width: 28px;
     height: 28px;
     margin-right: 6px;
+  }
+
+  .priority-list {
+    flex-direction: column;
+    width: 100%;
+    padding: 8px 0;
+  }
+
+  .priority-option {
+    flex-direction: row;
+    align-items: center;
+    padding: 18px 24px;
+    border-radius: 14px;
+    margin-bottom: 6px;
+    background-color: rgba(38, 38, 38, 0.6);
+  }
+
+  .priority-option:active {
+    background-color: rgba(50, 50, 50, 0.8);
+  }
+
+  .priority-name {
+    font-size: 26px;
+    font-weight: bold;
+    flex: 1;
+    margin-left: 16px;
+  }
+
+  .priority-check {
+    width: 28px;
+    height: 28px;
   }
 
   .priority-wheel {
@@ -358,7 +397,8 @@
       this.hide = !this.hide
     },
     showPriorityPicker() {
-      this.priorityIndex = this.priorityOptions.indexOf(this.selectedPriority)
+      let idx = this.priorityOptions.indexOf(this.selectedPriority)
+      this.priorityIndex = idx >= 0 ? idx : 0
       this.showPriority = true
     },
     hidePriorityPicker() {
@@ -366,6 +406,10 @@
     },
     onPriorityChange(evt) {
       this.priorityIndex = evt.newSelected
+    },
+    selectPriority(idx) {
+      this.priorityIndex = idx
+      this.showPriority = false
     },
     confirmPriority() {
       this.selectedPriority = this.priorityOptions[this.priorityIndex]

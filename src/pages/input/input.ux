@@ -103,10 +103,6 @@
     text-overflow: ellipsis;
   }
 
-  .placeholder-text {
-    color: #6f6f6f;
-  }
-
   .padding {
     height: 100px;
   }

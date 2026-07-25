@@ -25,11 +25,14 @@ jobs:
         run: npm run build
 
       - name: Sign RPK
-        if: ${{ secrets.CERT_PEM != '' && secrets.KEY_PEM != '' }}
         run: |
-          echo "$CERT_PEM" > certificate.pem
-          echo "$KEY_PEM" > private.pem
-          npx aiot resign --cert certificate.pem --key private.pem dist/*.rpk
+          if [ -n "$CERT_PEM" ] && [ -n "$KEY_PEM" ]; then
+            echo "$CERT_PEM" > certificate.pem
+            echo "$KEY_PEM" > private.pem
+            npx aiot resign --cert certificate.pem --key private.pem dist/*.rpk
+          else
+            echo "Skipping sign: CERT_PEM or KEY_PEM not set"
+          fi
         env:
           CERT_PEM: ${{ secrets.CERT_PEM }}
           KEY_PEM: ${{ secrets.KEY_PEM }}

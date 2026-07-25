@@ -25,7 +25,7 @@ jobs:
         run: npm run build
 
       - name: Sign RPK
-        if: env.CERT_PEM != '' && env.KEY_PEM != ''
+        if: ${{ secrets.CERT_PEM != '' && secrets.KEY_PEM != '' }}
         run: |
           echo "$CERT_PEM" > certificate.pem
           echo "$KEY_PEM" > private.pem

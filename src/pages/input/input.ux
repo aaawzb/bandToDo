@@ -9,7 +9,7 @@
       @click="goBack"
     />
     <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
-      <span class="iconfont">&#xe685;</span>
+      <img class="icon-back" src="/common/back.png" />
       <span>新建待办</span>
     </text>
     <img else class="top" src="/common/back.png" @click="goBack" />
@@ -190,6 +190,12 @@
     font-size: 24px;
     color: #4cd964;
     padding: 8px;
+  }
+
+  .icon-back {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
   }
 
   .priority-wheel {

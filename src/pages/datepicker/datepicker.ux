@@ -9,7 +9,7 @@
       @click="goBack"
     />
     <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
-      <span class="iconfont">&#xe685;</span>
+      <img class="icon-back" src="/common/back.png" />
       <span>选择日期</span>
     </text>
     <img else class="top" src="/common/back.png" @click="goBack" />
@@ -54,6 +54,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  .icon-back {
+    width: 28px;
+    height: 28px;
+    margin-right: 6px;
   }
 
   .date-picker {

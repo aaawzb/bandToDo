@@ -720,7 +720,6 @@ export default {
 .caltext {
   text-align:left;
   line-height:38px;
-  lines:1;
   text-overflow:ellipsis;
   color:#0d84ff;
   height:45px;

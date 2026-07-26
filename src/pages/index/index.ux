@@ -4,29 +4,43 @@
     <text class="title">待办清单</text>
 
     <div class="box">
-      <scroll scroll-y="true" bounces="true">
-        <div if="{{ todos.length === 0 }}" class="empty-state">
-          <text class="empty-text">暂无待办事项</text>
-          <text class="empty-hint">点击下方按钮添加</text>
-        </div>
-        <div else for="{{ todos }}">
-          <div class="todo-card" onclick="toggleDone($idx)" onlongpress="deleteTodo($idx)">
-            <div class="card-left">
-              <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
-              <div class="card-content">
-                <text class="todo-title">{{$item.title}}</text>
-                <text class="todo-meta" if="{{ $item.dueDate }}">{{$item.dueDate}}</text>
+      <div if="{{ todos.length === 0 }}" class="empty-state">
+        <text class="empty-text">暂无待办事项</text>
+        <text class="empty-hint">点击下方按钮添加</text>
+      </div>
+
+          <div elif="{{ todos.length === 1 }}" class="single-wrapper">
+            <div class="todo-card single-card" style="border-left: 6px solid {{singleTodo.themeColor || '#3184d0'}};" onclick="toggleDone(0)" onlongpress="deleteTodo(0)">
+              <div class="card-main">
+                <marquee class="todo-title" scrollamount="4" if="{{ singleTodo.isLongTitle }}">{{singleTodo.title}}</marquee>
+                <text class="todo-title" if="{{ singleTodo.isShortTitle }}">{{singleTodo.title}}</text>
+                <text class="todo-meta" if="{{ singleTodo.dueDate }}">{{singleTodo.dueDate}}</text>
+              </div>
+              <div class="card-right">
+                <div class="priority-dot" style="background-color: {{getPriorityColor(singleTodo.priority)}};"></div>
+                <text class="todo-status" if="{{ singleTodo.done }}">已完成</text>
+                <text class="todo-status undone" else>待完成</text>
               </div>
             </div>
-            <div class="card-right">
-              <text class="todo-status" if="{{ $item.done }}">已完成</text>
-              <text class="todo-status undone" else>待完成</text>
-              <img class="delete-hint" if="{{ global.screenShape === 'rect' }}" src="/common/del_rect.png" />
-              <img class="delete-hint" else src="/common/del.png" />
-            </div>
+            <text class="delete-hint-text">长按删除</text>
           </div>
-        </div>
-      </scroll>
+
+          <div else class="swiper-wrapper">
+            <swiper class="todo-swiper" indicator="false">
+              <div class="todo-card swiper-card" for="{{ todos }}" style="border-left: 6px solid {{$item.themeColor || '#3184d0'}};" onclick="toggleDone($idx)" onlongpress="deleteTodo($idx)">
+                <div class="card-main">
+                  <marquee class="todo-title" scrollamount="4" if="{{ $item.isLongTitle }}">{{$item.title}}</marquee>
+                  <text class="todo-title" if="{{ $item.isShortTitle }}">{{$item.title}}</text>
+                  <text class="todo-meta" if="{{ $item.dueDate }}">{{$item.dueDate}}</text>
+                </div>
+                <div class="card-right">
+                  <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
+                  <text class="todo-status" if="{{ $item.done }}">已完成</text>
+                  <text class="todo-status undone" else>待完成</text>
+                </div>
+              </div>
+            </swiper>
+          </div>
     </div>
 
     <div class="add-fab" onclick="addTodo">
@@ -42,7 +56,7 @@
     flex-direction: column;
     align-items: center;
     color: white;
-    background-color: black;
+    background-color: #000000;
   }
 
   .box {
@@ -63,7 +77,7 @@
     width: 150px;
     height: 52px;
     margin-bottom: 24px;
-    border-radius: 26px;
+    border-radius: 100%;
     background-color: #262626;
     border: 3px solid rgba(255, 255, 255, 0.06);
   }
@@ -74,68 +88,79 @@
     font-weight: bold;
   }
 
-  scroll {
-    flex: 1;
+  .single-wrapper {
     width: 100%;
-    align-items: flex-start;
     flex-direction: column;
+    align-items: center;
+  }
+
+  .swiper-wrapper {
+    width: 100%;
+    flex: 1;
+  }
+
+  .todo-swiper {
+    width: 100%;
+    height: 100%;
   }
 
   .todo-card {
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
-    height: 78px;
-    border-radius: 14px;
-    margin-bottom: 10px;
+    min-height: 100px;
+    border-radius: 20px;
     overflow: hidden;
-    background-color: #262626;
-    border: 3px solid rgba(255, 255, 255, 0.06);
+    background-color: #ffffff;
+    padding: 16px 20px;
+    box-sizing: border-box;
   }
 
-  .card-left {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  .single-card {
+    min-height: 160px;
+  }
+
+  .swiper-card {
+    min-height: 140px;
+  }
+
+  .card-main {
     flex: 1;
-    height: 100%;
-    padding-left: 12px;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 12px;
+  }
+
+  .todo-title {
+    font-size: 28px;
+    color: #000000;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    height: 36px;
+    width: 100%;
+  }
+
+  .todo-meta {
+    font-size: 20px;
+    color: #6f6f6f;
+    margin-top: 8px;
+  }
+
+  .card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
   }
 
   .priority-dot {
     width: 8px;
     height: 8px;
     border-radius: 4px;
-    margin-right: 10px;
-  }
-
-  .card-content {
-    flex: 1;
-    flex-direction: column;
-  }
-
-  .todo-title {
-    font-size: 26px;
-    color: white;
-    font-weight: bold;
-    text-overflow: ellipsis;
-    height: 32px;
-    width: 100%;
-  }
-
-  .todo-meta {
-    font-size: 18px;
-    color: #6f6f6f;
-    margin-top: 4px;
-  }
-
-  .card-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 25%;
-    height: 100%;
+    margin-bottom: 12px;
   }
 
   .todo-status {
@@ -148,14 +173,13 @@
     color: #6f6f6f;
   }
 
-  .delete-hint {
-    width: 18px;
-    height: 18px;
-    opacity: 0.3;
-    margin-left: 8px;
+  .delete-hint-text {
+    font-size: 18px;
+    color: #6f6f6f;
+    margin-top: 16px;
   }
 
-.empty-state {
+  .empty-state {
     flex: 1;
     flex-direction: column;
     align-items: center;
@@ -221,6 +245,9 @@
       this.time = global.getTime ? global.getTime() : ''
       this.loadTodos()
     },
+    get singleTodo() {
+      return this.todos.length === 1 ? this.todos[0] : { title: '', done: false, priority: '无', dueDate: '', themeColor: '#3184d0', isShortTitle: true, isLongTitle: false }
+    },
     loadTodos() {
       let that = this
       file.readText({
@@ -228,7 +255,11 @@
         success(ret) {
           try {
             let data = JSON.parse(ret.text)
-            that.todos = data || []
+            that.todos = (data || []).map(function(t) {
+              t.isLongTitle = t.title && t.title.length > 10
+              t.isShortTitle = !t.isLongTitle
+              return t
+            })
           }
           catch (e) {
             that.todos = []

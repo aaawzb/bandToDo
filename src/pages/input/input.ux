@@ -23,23 +23,37 @@
     <img else class="bottom" src="/common/check.png" @click="saveTodo" />
 
     <div class="padding" style="height: {{kbVisible ? '320px' : '100px'}};"></div>
+
+    <!-- 输入框（胶囊形） -->
     <div class="line">
-      <div class="input-line" @click="changeKbState">
+      <div class="input-line capsule-input" @click="changeKbState">
         <text class="input-text" style="color: {{inputTextColor}};">
           {{textValue || '点击输入内容'}}
         </text>
       </div>
     </div>
 
+    <!-- 操作栏 -->
     <div class="action-bar">
       <div class="action-btn priority-btn" onclick="showPriorityPicker">
+        <text class="action-label">优先级</text>
         <text class="priority-preview" style="color: {{getPriorityColor(selectedPriority)}};">{{priorityLabel}}</text>
       </div>
       <div class="action-btn date-btn" onclick="showDatePicker">
+        <text class="action-label">日期</text>
         <text class="action-text">{{dateLabel}}</text>
       </div>
     </div>
 
+    <!-- 主题色选择器 -->
+    <div class="theme-section">
+      <text class="theme-label">主题色</text>
+      <div class="theme-colors">
+        <div for="{{ themeColors }}" class="color-swatch" style="background-color: {{ $item.hex }}; opacity: {{ $item.hex === selectedColor ? 1.0 : 0.4 }};" onclick="selectColor({{ $idx }})"></div>
+      </div>
+    </div>
+
+    <!-- 优先级选择弹窗 -->
     <div class="priority-picker" if="{{showPriority}}">
       <div class="picker-overlay" onclick="hidePriorityPicker"></div>
       <div class="picker-panel">
@@ -103,25 +117,26 @@
     margin-bottom: 12px;
   }
 
-  .input-line {
+  .capsule-input {
     height: 64px;
     width: 100%;
     background-color: #262626;
     border: 3px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
+    border-radius: 100%;
     display: flex;
     align-items: center;
+    padding: 0 24px;
   }
 
   .input-text {
     width: 100%;
-    padding: 0 16px;
     font-size: 28px;
     color: white;
     font-weight: bold;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    height: 64px;
   }
 
   .padding {
@@ -142,26 +157,58 @@
     border-radius: 16px;
     border: 3px solid rgba(255, 255, 255, 0.06);
     flex: 1;
+    flex-direction: column;
+    align-items: center;
   }
 
   .priority-btn {
     margin-right: 8px;
-    text-align: left;
   }
 
   .date-btn {
     margin-left: 8px;
-    text-align: right;
+  }
+
+  .action-label {
+    font-size: 18px;
+    color: #6f6f6f;
+    margin-bottom: 4px;
   }
 
   .priority-preview {
     font-size: 22px;
-    color: white;
+    font-weight: bold;
   }
 
   .action-text {
     font-size: 22px;
     color: #6f6f6f;
+  }
+
+  .theme-section {
+    width: 90%;
+    margin-top: 16px;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .theme-label {
+    font-size: 20px;
+    color: #6f6f6f;
+    margin-bottom: 10px;
+  }
+
+  .theme-colors {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .color-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    margin: 0 6px;
   }
 
   .priority-picker {
@@ -262,23 +309,31 @@
       width: 83%;
     }
 
+    .theme-section {
+      width: 83%;
+    }
+
     .padding {
       height: 90px;
     }
 
-    .input-line {
+    .capsule-input {
       height: 56px;
-      border-radius: 14px;
+      border-radius: 100%;
     }
 
     .input-text {
       font-size: 24px;
-      padding: 0 14px;
+      height: 56px;
     }
 
     .action-btn {
       padding: 8px 14px;
       border-radius: 14px;
+    }
+
+    .action-label {
+      font-size: 16px;
     }
 
     .priority-preview,
@@ -289,6 +344,11 @@
     .picker-title {
       font-size: 22px;
     }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+    }
   }
 
   @media (device-type: watch) and (shape: rect) {
@@ -297,6 +357,10 @@
     }
 
     .action-bar {
+      width: 75%;
+    }
+
+    .theme-section {
       width: 75%;
     }
 
@@ -314,17 +378,22 @@
       width: 70%;
     }
 
+    .theme-section {
+      width: 70%;
+    }
+
     .padding {
       height: 70px;
     }
 
-    .input-line {
+    .capsule-input {
       height: 56px;
-      border-radius: 14px;
+      border-radius: 100%;
     }
 
     .input-text {
       font-size: 24px;
+      height: 56px;
     }
 
     .action-btn {
@@ -332,9 +401,18 @@
       border-radius: 14px;
     }
 
+    .action-label {
+      font-size: 16px;
+    }
+
     .priority-preview,
     .action-text {
       font-size: 20px;
+    }
+
+    .color-swatch {
+      width: 32px;
+      height: 32px;
     }
   }
 </style>
@@ -343,7 +421,7 @@
   import router from '@system.router'
   import file from '@system.file'
   import prompt from '@system.prompt'
-  import { getPriorityColor } from '../../common/utils.js'
+  import { getPriorityColor, getThemeColors } from '../../common/utils.js'
 
   const DATA_PATH = '/data/todos.json'
 
@@ -360,6 +438,8 @@
       priorityOptions: ['无', '低', '中', '高'],
       priorityIndex: 0,
       kbVisible: false,
+      selectedColor: '#3184d0',
+      themeColors: [],
     },
     computed: {
       priorityLabel() {
@@ -378,6 +458,7 @@
     },
     onInit() {
       this.screentype = global.screenShape || 'rect'
+      this.themeColors = getThemeColors()
     },
     onShow() {
       this.time = global.getTime ? global.getTime() : ''
@@ -424,6 +505,9 @@
       global.returnedDate = this.selectedDate
       router.push({ uri: '/pages/datepicker' })
     },
+    selectColor(idx) {
+      this.selectedColor = this.themeColors[idx].hex
+    },
     goBack() {
       router.back()
     },
@@ -439,6 +523,7 @@
         done: false,
         priority: this.selectedPriority,
         dueDate: this.selectedDate || '',
+        themeColor: this.selectedColor,
         createdAt: new Date().toISOString()
       }
 

@@ -49,10 +49,25 @@
           <text class="picker-confirm" onclick="confirmPriority">确定</text>
         </div>
         <div class="priority-list">
-          <div class="priority-option" for="{{priorityOptions}}" onclick="selectPriority($idx)">
-            <div class="priority-dot" style="background-color: {{getPriorityColor($item)}};"></div>
-            <text class="priority-name" style="color: {{getPriorityColor($item)}};">{{$item}}</text>
-            <img class="priority-check" if="{{priorityIndex === $idx}}" src="/common/check.png" />
+          <div class="priority-option" onclick="selectPriority(0)">
+            <div class="priority-dot" style="background-color: {{priorityColors[0]}};"></div>
+            <text class="priority-name" style="color: {{priorityColors[0]}};">无</text>
+            <img class="priority-check" if="{{priorityIndex === 0}}" src="/common/check.png" />
+          </div>
+          <div class="priority-option" onclick="selectPriority(1)">
+            <div class="priority-dot" style="background-color: {{priorityColors[1]}};"></div>
+            <text class="priority-name" style="color: {{priorityColors[1]}};">低</text>
+            <img class="priority-check" if="{{priorityIndex === 1}}" src="/common/check.png" />
+          </div>
+          <div class="priority-option" onclick="selectPriority(2)">
+            <div class="priority-dot" style="background-color: {{priorityColors[2]}};"></div>
+            <text class="priority-name" style="color: {{priorityColors[2]}};">中</text>
+            <img class="priority-check" if="{{priorityIndex === 2}}" src="/common/check.png" />
+          </div>
+          <div class="priority-option" onclick="selectPriority(3)">
+            <div class="priority-dot" style="background-color: {{priorityColors[3]}};"></div>
+            <text class="priority-name" style="color: {{priorityColors[3]}};">高</text>
+            <img class="priority-check" if="{{priorityIndex === 3}}" src="/common/check.png" />
           </div>
         </div>
       </div>
@@ -247,8 +262,6 @@
     height: 28px;
   }
 
-
-
   @media (device-type: band) and (shape: rect) {
     .line {
       width: 83%;
@@ -280,10 +293,6 @@
     .priority-preview,
     .action-text {
       font-size: 20px;
-    }
-
-    .priority-wheel {
-      selected-font-size: 30px;
     }
 
     .picker-title {
@@ -361,6 +370,9 @@
       priorityIndex: 0,
     },
     computed: {
+      priorityColors() {
+        return this.priorityOptions.map(p => getPriorityColor(p))
+      },
       priorityLabel() {
         return this.selectedPriority
       },

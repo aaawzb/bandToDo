@@ -6,6 +6,7 @@
 
 <script>
   import device from "@system.device"
+  import interconnect from "@system.interconnect"
 
   export default {
     onCreate() {
@@ -38,6 +39,12 @@
         return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m
       }
 
+      global.connected = false
+      try {
+        global.interconnect = interconnect.instance()
+      } catch (e) {
+        global.interconnect = null
+      }
     },
   }
 </script>

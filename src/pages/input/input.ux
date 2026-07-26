@@ -8,10 +8,10 @@
       src="/common/back_rect.png"
       @click="goBack"
     />
-    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
+    <div @click="goBack" class="title circle-title" elif="{{ global.screenShape == 'circle' }}">
       <img class="icon-back" src="/common/back.png" />
-      <span>新建待办</span>
-    </text>
+      <text class="title-text">新建待办</text>
+    </div>
     <img else class="top" src="/common/back.png" @click="goBack" />
 
     <img
@@ -22,7 +22,7 @@
     />
     <img else class="bottom" src="/common/check.png" @click="saveTodo" />
 
-    <div class="padding"></div>
+    <div class="padding" style="height: {{kbVisible ? '320px' : '100px'}};"></div>
     <div class="line">
       <div class="input-line" @click="changeKbState">
         <text class="input-text" style="color: {{inputTextColor}};">
@@ -77,7 +77,7 @@
     <input-method
       hide="{{hide}}"
       keyboardtype="{{keyboardtype}}"
-      maxlength="100"
+      maxlength="6"
       vibratemode="short"
       screentype="{{screentype}}"
       @visibilitychange="onVisibilityChange"
@@ -215,6 +215,17 @@
     margin-right: 6px;
   }
 
+  .circle-title {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .title-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+  }
+
   .priority-list {
     flex-direction: column;
     width: 100%;
@@ -348,6 +359,7 @@
       showPriority: false,
       priorityOptions: ['无', '低', '中', '高'],
       priorityIndex: 0,
+      kbVisible: false,
     },
     computed: {
       priorityLabel() {
@@ -378,7 +390,7 @@
       return getPriorityColor(p)
     },
     onVisibilityChange(evt) {
-      console.log('键盘可见性变化:' + JSON.stringify(evt))
+      this.kbVisible = evt.detail.visible
     },
     onKeyDown(evt) {
       console.log('按下按键:' + JSON.stringify(evt))

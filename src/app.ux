@@ -1,9 +1,3 @@
-<template>
-  <div>
-    <text class="title">待办清单</text>
-  </div>
-</template>
-
 <script>
   import device from "@system.device"
   import interconnect from "@system.interconnect"
@@ -21,6 +15,7 @@
             height: ret.screenHeight || 480
           }
           global.isPillShaped = ret.screenShape === "pill-shaped"
+          global.deviceReady = true
         },
         fail: function () {
           global.screenShape = "rect"
@@ -29,6 +24,7 @@
           global.screenHeight = 480
           global.screenSize = { width: 336, height: 480 }
           global.isPillShaped = false
+          global.deviceReady = true
         }
       })
 
@@ -48,10 +44,3 @@
     },
   }
 </script>
-
-<style>
-  .title {
-    font-size: 32px;
-    color: white;
-  }
-</style>

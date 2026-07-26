@@ -122,7 +122,7 @@
     width: 100%;
     background-color: #262626;
     border: 3px solid rgba(255, 255, 255, 0.06);
-    border-radius: 100%;
+    border-radius: 32px;
     display: flex;
     align-items: center;
     padding: 0 24px;
@@ -319,7 +319,7 @@
 
     .capsule-input {
       height: 56px;
-      border-radius: 100%;
+      border-radius: 28px;
     }
 
     .input-text {
@@ -388,7 +388,7 @@
 
     .capsule-input {
       height: 56px;
-      border-radius: 100%;
+      border-radius: 28px;
     }
 
     .input-text {
@@ -421,10 +421,8 @@
   import router from '@system.router'
   import file from '@system.file'
   import prompt from '@system.prompt'
-  import { getPriorityColor, getThemeColors } from '../../common/utils.js'
+  import { getPriorityColor, getThemeColors, DATA_PATH } from '../../common/utils.js'
   import { broadcastChanged } from '../../common/sync.js'
-
-  const DATA_PATH = '/data/todos.json'
 
   export default {
     private: {
@@ -474,9 +472,7 @@
     onVisibilityChange(evt) {
       this.kbVisible = evt.detail.visible
     },
-    onKeyDown(evt) {
-      console.log('按下按键:' + JSON.stringify(evt))
-    },
+    onKeyDown(evt) {},
     onDelete() {
       this.textValue = this.textValue.slice(0, -1)
     },

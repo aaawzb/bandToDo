@@ -230,6 +230,7 @@
       router.back()
     },
     goBack() {
+      global.returnedDate = ''
       router.back()
     }
   }

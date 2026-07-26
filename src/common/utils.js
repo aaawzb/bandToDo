@@ -1,3 +1,5 @@
+export const DATA_PATH = '/data/todos.json'
+
 const PRIORITY_COLORS = { '高': '#ff6a24', '中': '#ffc043', '低': '#4cd964', '无': '#6f6f6f' }
 
 const THEME_COLORS = [

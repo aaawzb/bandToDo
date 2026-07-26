@@ -1,6 +1,5 @@
 import file from '@system.file'
-
-const DATA_PATH = '/data/todos.json'
+import { DATA_PATH } from './utils.js'
 
 export const SyncProtocol = {
   GET_ALL: 'getAllTodo',
@@ -13,6 +12,8 @@ export const SyncProtocol = {
 
 export function initSync(onTodoUpdate) {
   if (!global.interconnect) return null
+  if (global.interconnect._syncInitialized) return global.interconnect
+  global.interconnect._syncInitialized = true
 
   global.interconnect.onmessage = (message) => {
     try {
@@ -70,7 +71,7 @@ function sendAllTodos() {
 
 function addTodoFromPhone(data, onTodoUpdate) {
   let newTodo = data.todo
-  if (!newTodo || !newTodo.title) return
+  if (!newTodo || !newTodo.title || !newTodo.createdAt) return
 
   file.readText({
     uri: 'internal://app' + DATA_PATH,

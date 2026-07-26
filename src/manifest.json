@@ -17,7 +17,7 @@
   ],
   "config": {
     "logLevel": "log",
-    "designWidth": "device-width"
+    "designWidth": 336
   },
   "router": {
     "entry": "pages/index",

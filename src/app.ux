@@ -36,11 +36,16 @@
       }
 
       global.connected = false
-      try {
-        global.interconnect = interconnect.instance()
-      } catch (e) {
-        global.interconnect = null
-      }
+      global.interconnect = null
+      setTimeout(function() {
+        try {
+          if (interconnect && typeof interconnect.instance === 'function') {
+            global.interconnect = interconnect.instance()
+          }
+        } catch (e) {
+          global.interconnect = null
+        }
+      }, 2000)
     },
   }
 </script>

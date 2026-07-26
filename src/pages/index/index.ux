@@ -249,7 +249,8 @@
       return false
     },
     get singleTodo() {
-      return this.todos.length === 1 ? this.todos[0] : { title: '', done: false, priority: '无', dueDate: '', themeColor: '#3184d0' }
+      var t = this.todos || []
+      return t.length === 1 ? t[0] : { title: '', done: false, priority: '无', dueDate: '', themeColor: '#3184d0' }
     },
     loadTodos() {
       let that = this

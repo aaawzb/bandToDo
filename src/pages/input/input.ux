@@ -430,7 +430,7 @@
       textValue: '',
       hide: true,
       keyboardtype: 'QWERTY',
-      screentype: 'rect',
+      screentype: global.screenShape || 'rect',
       selectedPriority: '无',
       selectedDate: '',
       showPriority: false,
@@ -499,7 +499,6 @@
       this.showPriority = false
     },
     showDatePicker() {
-      global.returnedDate = this.selectedDate
       router.push({ uri: '/pages/datepicker' })
     },
     selectColor(idx) {

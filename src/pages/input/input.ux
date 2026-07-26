@@ -50,23 +50,23 @@
         </div>
         <div class="priority-list">
           <div class="priority-option" onclick="selectPriority(0)">
-            <div class="priority-dot" style="background-color: {{priorityColors[0]}};"></div>
-            <text class="priority-name" style="color: {{priorityColors[0]}};">无</text>
+            <div class="priority-dot" style="background-color: #6f6f6f;"></div>
+            <text class="priority-name" style="color: #6f6f6f;">无</text>
             <img class="priority-check" if="{{priorityIndex == 0}}" src="/common/check.png" />
           </div>
           <div class="priority-option" onclick="selectPriority(1)">
-            <div class="priority-dot" style="background-color: {{priorityColors[1]}};"></div>
-            <text class="priority-name" style="color: {{priorityColors[1]}};">低</text>
+            <div class="priority-dot" style="background-color: #4cd964;"></div>
+            <text class="priority-name" style="color: #4cd964;">低</text>
             <img class="priority-check" if="{{priorityIndex == 1}}" src="/common/check.png" />
           </div>
           <div class="priority-option" onclick="selectPriority(2)">
-            <div class="priority-dot" style="background-color: {{priorityColors[2]}};"></div>
-            <text class="priority-name" style="color: {{priorityColors[2]}};">中</text>
+            <div class="priority-dot" style="background-color: #ffc043;"></div>
+            <text class="priority-name" style="color: #ffc043;">中</text>
             <img class="priority-check" if="{{priorityIndex == 2}}" src="/common/check.png" />
           </div>
           <div class="priority-option" onclick="selectPriority(3)">
-            <div class="priority-dot" style="background-color: {{priorityColors[3]}};"></div>
-            <text class="priority-name" style="color: {{priorityColors[3]}};">高</text>
+            <div class="priority-dot" style="background-color: #ff6a24;"></div>
+            <text class="priority-name" style="color: #ff6a24;">高</text>
             <img class="priority-check" if="{{priorityIndex == 3}}" src="/common/check.png" />
           </div>
         </div>
@@ -354,9 +354,6 @@
       priorityIndex: 0,
     },
     computed: {
-      priorityColors() {
-        return this.priorityOptions.map(p => getPriorityColor(p))
-      },
       priorityLabel() {
         return this.selectedPriority
       },

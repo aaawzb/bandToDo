@@ -24,6 +24,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ] || [ -z "$(ls -A dist/*.rpk 2>/dev/null)" ]; then
+            echo "ERROR: No RPK files found in dist/ — build likely failed silently"
+            exit 1
+          fi
+          if [ ! -d "build" ] || [ -z "$(ls -A build/ 2>/dev/null)" ]; then
+            echo "ERROR: No files found in build/ — build likely failed silently"
+            exit 1
+          fi
+          echo "Build output verified: dist/*.rpk and build/ exist"
+
       - name: Sign RPK
         run: |
           if [ -n "$CERT_PEM" ] && [ -n "$KEY_PEM" ]; then
@@ -42,11 +54,11 @@ jobs:
         with:
           name: rpk
           path: dist/**/*.rpk
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload build output
         uses: actions/upload-artifact@v4
         with:
           name: build
           path: build/
-          if-no-files-found: warn
+          if-no-files-found: error

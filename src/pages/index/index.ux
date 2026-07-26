@@ -21,7 +21,7 @@
             <div class="card-right">
               <text class="todo-status" if="{{ $item.done }}">已完成</text>
               <text class="todo-status undone" else>待完成</text>
-              <img class="delete-hint" if="{{ global.screenShape == 'rect' }}" src="/common/del_rect.png" />
+              <img class="delete-hint" if="{{ global.screenShape === 'rect' }}" src="/common/del_rect.png" />
               <img class="delete-hint" else src="/common/del.png" />
             </div>
           </div>

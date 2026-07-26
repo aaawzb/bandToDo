@@ -1,21 +1,21 @@
 <template>
   <div class="container">
     <text class="time">{{ time }}</text>
-    <text class="title" if="{{ global.screenShape == 'rect' }}">新建待办</text>
+    <text class="title" if="{{ global.screenShape === 'rect' }}">新建待办</text>
     <img
-      if="{{ global.screenShape == 'rect' }}"
+      if="{{ global.screenShape === 'rect' }}"
       class="top leftButton"
       src="/common/back_rect.png"
       @click="goBack"
     />
-    <text @click="goBack" class="title" elif="{{ global.screenShape === 'circle' || global.screenShape === 'pill-shaped' }}">
+    <div @click="goBack" class="title circle-title" elif="{{ global.screenShape === 'circle' || global.screenShape === 'pill-shaped' }}">
       <img class="icon-back" src="/common/back.png" />
-      <span>新建待办</span>
-    </text>
+      <text class="title-text">新建待办</text>
+    </div>
     <img else class="top" src="/common/back.png" @click="goBack" />
 
     <img
-      if="{{ global.screenShape == 'rect' }}"
+      if="{{ global.screenShape === 'rect' }}"
       class="top rightButton"
       src="/common/check_rect.png"
       @click="saveTodo"
@@ -202,6 +202,20 @@
     margin-right: 6px;
   }
 
+  .circle-title {
+    flex-direction: row;
+    align-items: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+  }
+
+  .title-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 1);
+  }
+
   .priority-list {
     flex-direction: column;
     width: 100%;
@@ -233,14 +247,7 @@
     height: 28px;
   }
 
-  .priority-wheel {
-    height: 200px;
-    width: 100%;
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 22px;
-    selected-color: #ffffff;
-    selected-font-size: 34px;
-  }
+
 
   @media (device-type: band) and (shape: rect) {
     .line {
@@ -404,9 +411,6 @@
     hidePriorityPicker() {
       this.showPriority = false
     },
-    onPriorityChange(evt) {
-      this.priorityIndex = evt.newSelected
-    },
     selectPriority(idx) {
       this.priorityIndex = idx
       this.showPriority = false
@@ -416,6 +420,7 @@
       this.showPriority = false
     },
     showDatePicker() {
+      global.returnedDate = this.selectedDate
       router.push({ uri: '/pages/datepicker' })
     },
     goBack() {

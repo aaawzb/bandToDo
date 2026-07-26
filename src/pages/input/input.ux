@@ -422,6 +422,7 @@
   import file from '@system.file'
   import prompt from '@system.prompt'
   import { getPriorityColor, getThemeColors } from '../../common/utils.js'
+  import { broadcastChanged } from '../../common/sync.js'
 
   const DATA_PATH = '/data/todos.json'
 
@@ -551,6 +552,7 @@
         uri: 'internal://app' + DATA_PATH,
         text: JSON.stringify(todos),
         success() {
+          broadcastChanged()
           router.back()
         },
         fail() {

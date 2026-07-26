@@ -230,6 +230,7 @@
   import vibrator from '@system.vibrator'
   import prompt from '@system.prompt'
   import { getPriorityColor } from '../../common/utils.js'
+  import { initSync, broadcastChanged } from '../../common/sync.js'
 
   const DATA_PATH = '/data/todos.json'
 
@@ -240,6 +241,13 @@
     },
     onInit() {
       this.loadTodos()
+      initSync((todos) => {
+        this.todos = (todos || []).map(function(t) {
+          t.isLongTitle = t.title && t.title.length > 10
+          t.isShortTitle = !t.isLongTitle
+          return t
+        })
+      })
     },
     onShow() {
       this.time = global.getTime ? global.getTime() : ''
@@ -286,6 +294,7 @@
     toggleDone(idx) {
       this.todos.splice(idx, 1, Object.assign({}, this.todos[idx], { done: !this.todos[idx].done }))
       this.saveTodos()
+      broadcastChanged()
       vibrator.vibrate({ mode: 'short' })
     },
     deleteTodo(idx) {
@@ -301,6 +310,7 @@
           if (ret.index === 1) {
             that.todos.splice(idx, 1)
             that.saveTodos()
+            broadcastChanged()
           }
         }
       })

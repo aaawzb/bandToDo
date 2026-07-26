@@ -49,7 +49,7 @@
     <div class="theme-section">
       <text class="theme-label">主题色</text>
       <div class="theme-colors">
-        <div for="{{ themeColors }}" class="color-swatch" style="background-color: {{ $item.hex }}; opacity: {{ $item.hex === selectedColor ? 1.0 : 0.4 }};" onclick="selectColor({{ $idx }})"></div>
+        <div for="{{ themeColors }}" class="color-swatch" style="background-color: {{ $item.hex }}; opacity: {{ $item.hex === selectedColor ? 1.0 : 0.4 }};" onclick="selectColor($idx)"></div>
       </div>
     </div>
 

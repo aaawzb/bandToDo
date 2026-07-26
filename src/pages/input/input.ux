@@ -1,21 +1,21 @@
 <template>
   <div class="container">
     <text class="time">{{ time }}</text>
-    <text class="title" if="{{ global.screenShape === 'rect' }}">新建待办</text>
+    <text class="title" if="{{ global.screenShape == 'rect' }}">新建待办</text>
     <img
-      if="{{ global.screenShape === 'rect' }}"
+      if="{{ global.screenShape == 'rect' }}"
       class="top leftButton"
       src="/common/back_rect.png"
       @click="goBack"
     />
-    <div @click="goBack" class="title circle-title" elif="{{ global.screenShape === 'circle' || global.screenShape === 'pill-shaped' }}">
+    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
       <img class="icon-back" src="/common/back.png" />
-      <text class="title-text">新建待办</text>
-    </div>
+      <span>新建待办</span>
+    </text>
     <img else class="top" src="/common/back.png" @click="goBack" />
 
     <img
-      if="{{ global.screenShape === 'rect' }}"
+      if="{{ global.screenShape == 'rect' }}"
       class="top rightButton"
       src="/common/check_rect.png"
       @click="saveTodo"
@@ -24,8 +24,8 @@
 
     <div class="padding"></div>
     <div class="line">
-      <div class="input-line">
-        <text class="input-text" @click="changeKbState" style="color: {{inputTextColor}};">
+      <div class="input-line" @click="changeKbState">
+        <text class="input-text" style="color: {{inputTextColor}};">
           {{textValue || '点击输入内容'}}
         </text>
       </div>
@@ -52,22 +52,22 @@
           <div class="priority-option" onclick="selectPriority(0)">
             <div class="priority-dot" style="background-color: {{priorityColors[0]}};"></div>
             <text class="priority-name" style="color: {{priorityColors[0]}};">无</text>
-            <img class="priority-check" if="{{priorityIndex === 0}}" src="/common/check.png" />
+            <img class="priority-check" if="{{priorityIndex == 0}}" src="/common/check.png" />
           </div>
           <div class="priority-option" onclick="selectPriority(1)">
             <div class="priority-dot" style="background-color: {{priorityColors[1]}};"></div>
             <text class="priority-name" style="color: {{priorityColors[1]}};">低</text>
-            <img class="priority-check" if="{{priorityIndex === 1}}" src="/common/check.png" />
+            <img class="priority-check" if="{{priorityIndex == 1}}" src="/common/check.png" />
           </div>
           <div class="priority-option" onclick="selectPriority(2)">
             <div class="priority-dot" style="background-color: {{priorityColors[2]}};"></div>
             <text class="priority-name" style="color: {{priorityColors[2]}};">中</text>
-            <img class="priority-check" if="{{priorityIndex === 2}}" src="/common/check.png" />
+            <img class="priority-check" if="{{priorityIndex == 2}}" src="/common/check.png" />
           </div>
           <div class="priority-option" onclick="selectPriority(3)">
             <div class="priority-dot" style="background-color: {{priorityColors[3]}};"></div>
             <text class="priority-name" style="color: {{priorityColors[3]}};">高</text>
-            <img class="priority-check" if="{{priorityIndex === 3}}" src="/common/check.png" />
+            <img class="priority-check" if="{{priorityIndex == 3}}" src="/common/check.png" />
           </div>
         </div>
       </div>
@@ -92,12 +92,10 @@
   @import '../../common/app.css';
 
   .container {
-    position: relative;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     background-color: #000000;
-    height: 100%;
   }
 
   .line {
@@ -215,20 +213,6 @@
     width: 28px;
     height: 28px;
     margin-right: 6px;
-  }
-
-  .circle-title {
-    flex-direction: row;
-    align-items: center;
-    font-size: 32px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 1);
-  }
-
-  .title-text {
-    font-size: 32px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 1);
   }
 
   .priority-list {

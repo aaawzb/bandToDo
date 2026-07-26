@@ -1,20 +1,20 @@
 <template>
   <div class="container">
     <text class="time">{{ time }}</text>
-    <text class="title" if="{{ global.screenShape === 'rect' }}">选择日期</text>
+    <text class="title" if="{{ global.screenShape == 'rect' }}">选择日期</text>
     <img
-      if="{{ global.screenShape === 'rect' }}"
+      if="{{ global.screenShape == 'rect' }}"
       class="top leftButton"
       src="/common/back_rect.png"
       @click="goBack"
     />
-    <div @click="goBack" class="title circle-title" elif="{{ global.screenShape === 'circle' || global.screenShape === 'pill-shaped' }}">
+    <text @click="goBack" class="title" elif="{{ global.screenShape == 'circle' }}">
       <img class="icon-back" src="/common/back.png" />
-      <text class="title-text">选择日期</text>
-    </div>
+      <span>选择日期</span>
+    </text>
     <img else class="top" src="/common/back.png" @click="goBack" />
     <img
-      if="{{ global.screenShape === 'rect' }}"
+      if="{{ global.screenShape == 'rect' }}"
       class="top rightButton"
       src="/common/check_rect.png"
       @click="saveDate"
@@ -60,20 +60,6 @@
     width: 28px;
     height: 28px;
     margin-right: 6px;
-  }
-
-  .circle-title {
-    flex-direction: row;
-    align-items: center;
-    font-size: 32px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 1);
-  }
-
-  .title-text {
-    font-size: 32px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 1);
   }
 
   .date-picker {

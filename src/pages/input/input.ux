@@ -230,10 +230,6 @@
     background-color: rgba(38, 38, 38, 0.6);
   }
 
-  .priority-option:active {
-    background-color: rgba(50, 50, 50, 0.8);
-  }
-
   .priority-name {
     font-size: 26px;
     font-weight: bold;

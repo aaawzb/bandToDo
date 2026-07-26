@@ -17,8 +17,8 @@
               </div>
               <div class="card-right">
                 <div class="priority-dot" style="background-color: {{getPriorityColor(singleTodo.priority)}};"></div>
-                <text class="todo-status" if="{{ singleTodo.done }}">已完�?/text>
-                <text class="todo-status undone" else>待完�?/text>
+                <text class="todo-status" if="{{ singleTodo.done }}">已完成</text>
+                <text class="todo-status undone" else>待完成</text>
               </div>
             </div>
             <text class="delete-hint-text">长按删除</text>
@@ -33,8 +33,8 @@
                 </div>
                 <div class="card-right">
                   <div class="priority-dot" style="background-color: {{getPriorityColor($item.priority)}};"></div>
-                  <text class="todo-status" if="{{ $item.done }}">已完�?/text>
-                  <text class="todo-status undone" else>待完�?/text>
+                  <text class="todo-status" if="{{ $item.done }}">已完成</text>
+                  <text class="todo-status undone" else>待完成</text>
                 </div>
               </div>
             </swiper>
@@ -42,7 +42,7 @@
     </div>
 
     <div class="add-fab" onclick="addTodo">
-      <text class="add-fab-text">�?新建</text>
+      <text class="add-fab-text">＋ 新建</text>
     </div>
   </div>
 </template>
@@ -249,7 +249,7 @@
       return false
     },
     get singleTodo() {
-      return this.todos.length === 1 ? this.todos[0] : { title: '', done: false, priority: '�?, dueDate: '', themeColor: '#3184d0' }
+      return this.todos.length === 1 ? this.todos[0] : { title: '', done: false, priority: '无', dueDate: '', themeColor: '#3184d0' }
     },
     loadTodos() {
       let that = this

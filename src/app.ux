@@ -6,7 +6,11 @@
     onCreate() {
       device.getInfo({
         success: function (ret) {
-          global.screenShape = ret.screenShape || "rect"
+          var shape = ret.screenShape
+          if (typeof shape === 'number' || typeof shape === 'boolean') {
+            shape = String(shape)
+          }
+          global.screenShape = shape || "rect"
           global.deviceType = ret.deviceType || "band"
           global.screenWidth = ret.screenWidth || 336
           global.screenHeight = ret.screenHeight || 480
@@ -14,7 +18,7 @@
             width: ret.screenWidth || 336,
             height: ret.screenHeight || 480
           }
-          global.isPillShaped = ret.screenShape === "pill-shaped"
+          global.isPillShaped = (global.screenShape === "pill-shaped")
           global.deviceReady = true
         },
         fail: function () {

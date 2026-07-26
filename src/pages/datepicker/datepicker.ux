@@ -89,9 +89,10 @@
   }
 
   .date-picker {
-    font-size: 12px;
-    color: rgba(0, 0, 0, 0.2);
+    font-size: 36px;
+    color: rgba(0, 0, 0, 0.3);
     selected-color: #3184d0;
+    selected-font-size: 42px;
   }
 
   @media (device-type: watch) and (shape: circle) {

@@ -35,7 +35,7 @@
 
     <!-- 操作栏 -->
     <div class="action-bar">
-      <div class="action-btn priority-btn" onclick="showPriorityPicker">
+      <div class="action-btn priority-btn">
         <text class="action-label">优先级</text>
         <text class="priority-preview" style="color: {{getPriorityColor(selectedPriority)}};">{{priorityLabel}}</text>
       </div>
@@ -53,38 +53,10 @@
       </div>
     </div>
 
-    <!-- 优先级选择弹窗 -->
-    <div class="priority-picker" if="{{showPriority}}">
-      <div class="picker-overlay" onclick="hidePriorityPicker"></div>
-      <div class="picker-panel">
-        <div class="picker-header">
-          <text class="picker-cancel" onclick="hidePriorityPicker">取消</text>
-          <text class="picker-title">优先级</text>
-          <text class="picker-confirm" onclick="confirmPriority">确定</text>
-        </div>
-        <div class="priority-list">
-          <div class="priority-option" onclick="selectPriority(0)">
-            <div class="priority-dot" style="background-color: #6f6f6f;"></div>
-            <text class="priority-name" style="color: #6f6f6f;">无</text>
-            <img class="priority-check" if="{{priorityIndex == 0}}" src="/common/check.png" />
-          </div>
-          <div class="priority-option" onclick="selectPriority(1)">
-            <div class="priority-dot" style="background-color: #4cd964;"></div>
-            <text class="priority-name" style="color: #4cd964;">低</text>
-            <img class="priority-check" if="{{priorityIndex == 1}}" src="/common/check.png" />
-          </div>
-          <div class="priority-option" onclick="selectPriority(2)">
-            <div class="priority-dot" style="background-color: #ffc043;"></div>
-            <text class="priority-name" style="color: #ffc043;">中</text>
-            <img class="priority-check" if="{{priorityIndex == 2}}" src="/common/check.png" />
-          </div>
-          <div class="priority-option" onclick="selectPriority(3)">
-            <div class="priority-dot" style="background-color: #ff6a24;"></div>
-            <text class="priority-name" style="color: #ff6a24;">高</text>
-            <img class="priority-check" if="{{priorityIndex == 3}}" src="/common/check.png" />
-          </div>
-        </div>
-      </div>
+    <!-- 优先级滑动选择 -->
+    <div class="priority-picker-container">
+      <text class="section-label">优先级</text>
+      <picker class="priority-picker" type="text" range="{{priorityOptions}}" selected="{{priorityIndex}}" @change="onPriorityChange" />
     </div>
 
     <import name="input-method" src="../../components/InputMethod/InputMethod.ux"></import>
@@ -138,6 +110,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     height: 64px;
+    padding: 0 24px;
+    text-align: center;
   }
 
   .padding {
@@ -193,6 +167,12 @@
     align-items: center;
   }
 
+  .section-label {
+    font-size: 20px;
+    color: #6f6f6f;
+    margin-bottom: 10px;
+  }
+
   .theme-label {
     font-size: 20px;
     color: #6f6f6f;
@@ -206,55 +186,25 @@
   }
 
   .color-swatch {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    margin: 0 6px;
+    margin: 0 8px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .priority-picker-container {
+    width: 90%;
+    margin-top: 16px;
+    flex-direction: column;
+    align-items: center;
   }
 
   .priority-picker {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    flex-direction: column;
-    justify-content: flex-end;
-    z-index: 100;
-  }
-
-  .picker-overlay {
-    flex: 1;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .picker-panel {
-    background-color: #1a1a1a;
-    border-radius: 20px 20px 0 0;
-    padding: 24px 20px;
-    border: 3px solid rgba(255, 255, 255, 0.06);
-    border-bottom: none;
-  }
-
-  .picker-title {
-    font-size: 24px;
-    color: #ffffff;
-    text-align: center;
-    flex: 1;
-  }
-
-  .picker-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-  }
-
-  .picker-cancel,
-  .picker-confirm {
-    font-size: 24px;
-    color: #4cd964;
-    padding: 8px;
+    font-size: 36px;
+    color: rgba(255, 255, 255, 0.3);
+    selected-color: #ffffff;
+    selected-font-size: 42px;
   }
 
   .icon-back {
@@ -272,33 +222,6 @@
     font-size: 32px;
     font-weight: bold;
     color: rgba(255, 255, 255, 1);
-  }
-
-  .priority-list {
-    flex-direction: column;
-    width: 100%;
-    padding: 8px 0;
-  }
-
-  .priority-option {
-    flex-direction: row;
-    align-items: center;
-    padding: 18px 24px;
-    border-radius: 14px;
-    margin-bottom: 6px;
-    background-color: rgba(38, 38, 38, 0.6);
-  }
-
-  .priority-name {
-    font-size: 26px;
-    font-weight: bold;
-    flex: 1;
-    margin-left: 16px;
-  }
-
-  .priority-check {
-    width: 28px;
-    height: 28px;
   }
 
   @media (device-type: band) and (shape: rect) {
@@ -326,6 +249,8 @@
     .input-text {
       font-size: 24px;
       height: 56px;
+      padding: 0 20px;
+      text-align: center;
     }
 
     .action-btn {
@@ -342,13 +267,13 @@
       font-size: 20px;
     }
 
-    .picker-title {
-      font-size: 22px;
-    }
-
     .color-swatch {
       width: 32px;
       height: 32px;
+    }
+
+    .priority-picker-container {
+      width: 83%;
     }
   }
 
@@ -367,6 +292,10 @@
 
     .padding {
       height: 110px;
+    }
+
+    .priority-picker-container {
+      width: 75%;
     }
   }
 
@@ -395,6 +324,8 @@
     .input-text {
       font-size: 24px;
       height: 56px;
+      padding: 0 20px;
+      text-align: center;
     }
 
     .action-btn {
@@ -415,6 +346,10 @@
       width: 32px;
       height: 32px;
     }
+
+    .priority-picker-container {
+      width: 70%;
+    }
   }
 </style>
 
@@ -434,7 +369,6 @@
       screentype: 'rect',
       selectedPriority: '无',
       selectedDate: '',
-      showPriority: false,
       priorityOptions: ['无', '低', '中', '高'],
       priorityIndex: 0,
       kbVisible: false,
@@ -483,21 +417,9 @@
     changeKbState() {
       this.hide = !this.hide
     },
-    showPriorityPicker() {
-      let idx = this.priorityOptions.indexOf(this.selectedPriority)
-      this.priorityIndex = idx >= 0 ? idx : 0
-      this.showPriority = true
-    },
-    hidePriorityPicker() {
-      this.showPriority = false
-    },
-    selectPriority(idx) {
-      this.priorityIndex = idx
-      this.showPriority = false
-    },
-    confirmPriority() {
+    onPriorityChange(e) {
+      this.priorityIndex = e.newSelected
       this.selectedPriority = this.priorityOptions[this.priorityIndex]
-      this.showPriority = false
     },
     showDatePicker() {
       router.push({ uri: '/pages/datepicker' })

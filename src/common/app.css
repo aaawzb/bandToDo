@@ -1,11 +1,8 @@
 .time {
   position: absolute;
   top: 4px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+  text-align: center;
   font-size: 24px;
   font-weight: bold;
   color: rgba(255, 255, 255, 0.6);

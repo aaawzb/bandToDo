@@ -35,7 +35,7 @@
 
     <!-- 操作栏 -->
     <div class="action-bar">
-      <div class="action-btn priority-btn">
+      <div class="action-btn priority-btn" onclick="togglePriorityPicker">
         <text class="action-label">优先级</text>
         <text class="priority-preview" style="color: {{getPriorityColor(selectedPriority)}};">{{priorityLabel}}</text>
       </div>
@@ -53,8 +53,8 @@
       </div>
     </div>
 
-    <!-- 优先级滑动选择 -->
-    <div class="priority-picker-container">
+    <!-- 优先级滑动选择（点击按钮后显示）-->
+    <div class="priority-picker-container" if="{{showPriorityPicker}}">
       <text class="section-label">优先级</text>
       <picker class="priority-picker" type="text" range="{{priorityOptions}}" selected="{{priorityIndex}}" @change="onPriorityChange" />
     </div>
@@ -372,6 +372,7 @@
       priorityOptions: ['无', '低', '中', '高'],
       priorityIndex: 0,
       kbVisible: false,
+      showPriorityPicker: false,
       selectedColor: '#3184d0',
       themeColors: [],
     },
@@ -396,6 +397,7 @@
     },
     onShow() {
       this.time = global.getTime ? global.getTime() : ''
+      this.screentype = global.screenShape || 'rect'
       if (global.returnedDate) {
         this.selectedDate = global.returnedDate
         global.returnedDate = ''
@@ -405,7 +407,8 @@
       return getPriorityColor(p)
     },
     onVisibilityChange(evt) {
-      this.kbVisible = evt.detail.visible
+      // visible=false 表示键盘显示（hide=false），visible=true 表示键盘隐藏（hide=true）
+      this.kbVisible = !evt.detail.visible
     },
     onKeyDown(evt) {},
     onDelete() {
@@ -416,6 +419,12 @@
     },
     changeKbState() {
       this.hide = !this.hide
+    },
+    hideKeyboard() {
+      this.hide = true
+    },
+    togglePriorityPicker() {
+      this.showPriorityPicker = !this.showPriorityPicker
     },
     onPriorityChange(e) {
       this.priorityIndex = e.newSelected
